@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import OrgController from "../controllers/positions.controller.js";
+import OrgController from "../controllers/positions-controller.js";
 
 const positionsRoute = new Hono({ strict: false });
 
