@@ -21,5 +21,6 @@ positionsRoute.get(
   positionsController.GetPositionChildren
 );
 positionsRoute.post("/position", positionsController.CreatePosition);
+positionsRoute.put("/position/:id", positionsController.UpdatePosition);
 
 export default positionsRoute;

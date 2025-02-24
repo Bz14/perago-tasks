@@ -44,6 +44,31 @@ class PositionCommandService implements PositionCommandServiceInterface {
       throw new Error(error.message);
     }
   };
+
+  UpdatePosition = async (id: string, name: string, description: string) => {
+    try {
+      const pos: any = await this.positionRepository.GetPositionById(id);
+      if (!pos) {
+        throw new Error("Position not found.");
+      }
+
+      if (!name) {
+        name = pos.name;
+      }
+
+      if (!description) {
+        description = pos.description;
+      }
+      const position = this.positionRepository.UpdatePosition(
+        id,
+        name,
+        description
+      );
+      return position;
+    } catch (error: Error | any) {
+      throw new Error(error);
+    }
+  };
 }
 
 export default PositionCommandService;

@@ -39,6 +39,13 @@ class PositionRepositories implements PositionRepositoryInterface {
   GetAllPositions = async () => {
     return db.select().from(positions);
   };
+  UpdatePosition = async (id: string, name: string, description: string) => {
+    return db
+      .update(positions)
+      .set({ name, description })
+      .where(eq(positions.id, id))
+      .returning();
+  };
 }
 
 export default PositionRepositories;

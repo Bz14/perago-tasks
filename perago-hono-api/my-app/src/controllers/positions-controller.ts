@@ -71,10 +71,28 @@ class PositionController {
   GetAllPositions = async (c: Context) => {
     try {
       const positions: any = await this.queryService.GetAllPositions();
-      // if (positions.length == 0) {
-      //   return c.json({ data: null, message: "Positions not found" });
-      // }
+      if (positions.length == 0) {
+        return c.json({ data: null, message: "Positions not found" });
+      }
       return c.json({ data: positions, message: "All positions fetched" });
+    } catch (error: Error | any) {
+      return c.json({ error: error.message });
+    }
+  };
+
+  UpdatePosition = async (c: Context) => {
+    try {
+      const id = c.req.param("id");
+      const { name, description }: any = await c.req.json();
+      const result: any = await this.commandService.UpdatePosition(
+        id,
+        name,
+        description
+      );
+      return c.json({
+        data: result,
+        message: "Position updated successfully.",
+      });
     } catch (error: Error | any) {
       return c.json({ error: error.message });
     }

@@ -9,10 +9,12 @@ interface PositionRepositoryInterface {
   CheckNullParentPosition: () => {};
   GetChildPosition: (id: string) => {};
   GetAllPositions: () => {};
+  UpdatePosition: (id: string, name: string, description: string) => {};
 }
 
 interface PositionCommandServiceInterface {
   CreatePosition: (name: string, description: string, parentId: string) => {};
+  UpdatePosition: (id: string, name: string, description: string) => {};
 }
 
 interface PositionQueryServiceInterface {
