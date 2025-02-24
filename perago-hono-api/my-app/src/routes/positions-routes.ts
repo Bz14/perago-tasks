@@ -1,9 +1,19 @@
 import { Hono } from "hono";
-import OrgController from "../controllers/positions-controller.js";
+import PositionController from "../controllers/positions-controller.js";
+import PositionRepositories from "../repositories/positions-repositories.js";
+import PositionCommandService from "../services/positions-commands.js";
+import PositionQueryService from "../services/positions-queries.js";
+
+const positionRepositories = new PositionRepositories();
+const positionCommandService = new PositionCommandService(positionRepositories);
+const positionQueryService = new PositionQueryService(positionRepositories);
+const positionsController = new PositionController(
+  positionCommandService,
+  positionQueryService
+);
 
 const positionsRoute = new Hono({ strict: false });
 
-const positionsController = new OrgController();
+positionsRoute.post("/positions", positionsController.CreatePosition);
 
-positionsRoute.post("/positions", positionsController.GetEmployees);
 export default positionsRoute;

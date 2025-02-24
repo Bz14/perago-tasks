@@ -1,0 +1,21 @@
+interface PositionRepositoryInterface {
+  GetPositionById: (id: string) => {};
+  CreatePosition: (data: {
+    id: string | null;
+    name: string;
+    description: string | null;
+    parentId: string | null;
+  }) => {};
+}
+
+interface PositionCommandServiceInterface {
+  CreatePosition: (name: string, description?: string, parentId?: string) => {};
+}
+
+interface PositionQueryServiceInterface {}
+
+export type {
+  PositionRepositoryInterface,
+  PositionCommandServiceInterface,
+  PositionQueryServiceInterface,
+};

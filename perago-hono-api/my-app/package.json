@@ -6,10 +6,18 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.8",
-    "hono": "^4.7.2"
+    "@types/pg": "^8.11.11",
+    "dotenv": "^16.4.7",
+    "drizzle-kit": "^0.30.4",
+    "drizzle-orm": "^0.39.3",
+    "hono": "^4.7.2",
+    "my-app": "file:",
+    "pg": "^8.13.3"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
-    "tsx": "^4.7.1"
+    "@types/node": "^20.17.19",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.1",
+    "typescript": "^5.7.3"
   }
 }
