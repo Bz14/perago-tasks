@@ -14,6 +14,20 @@ class PositionQueryService implements PositionQueryServiceInterface {
       throw new Error(error.message);
     }
   };
+
+  GetChildrenPositions = async (id: string) => {
+    try {
+      const position = await this.positionRepository.GetPositionById(id);
+      if (!position) {
+        throw new Error("Position not found");
+      }
+
+      const children = this.positionRepository.GetChildPosition(id);
+      return children;
+    } catch (error: Error | any) {
+      throw new Error(error);
+    }
+  };
 }
 
 export default PositionQueryService;

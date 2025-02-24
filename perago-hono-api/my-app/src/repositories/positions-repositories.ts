@@ -1,4 +1,4 @@
-import { eq, isNull, count } from "drizzle-orm";
+import { eq, isNull } from "drizzle-orm";
 import { db } from "../config/db.js";
 import positions from "../models/schema.js";
 import type { PositionRepositoryInterface } from "../domain/interfaces/position-interface.js";
@@ -30,6 +30,10 @@ class PositionRepositories implements PositionRepositoryInterface {
 
   CheckNullParentPosition = async () => {
     return await db.select().from(positions).where(isNull(positions.parentId));
+  };
+
+  GetChildPosition = async (id: string) => {
+    return await db.select().from(positions).where(eq(positions.parentId, id));
   };
 }
 

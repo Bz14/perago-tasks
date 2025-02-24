@@ -16,5 +16,9 @@ const positionsRoute = new Hono({ strict: false });
 
 positionsRoute.post("/positions", positionsController.CreatePosition);
 positionsRoute.get("/position/:id", positionsController.GetPositionById);
+positionsRoute.get(
+  "/position/children/:id",
+  positionsController.GetPositionChildren
+);
 
 export default positionsRoute;

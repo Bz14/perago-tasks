@@ -54,6 +54,19 @@ class PositionController {
       return c.json({ error: error.message });
     }
   };
+
+  GetPositionChildren = async (c: Context) => {
+    try {
+      const id = c.req.param("id");
+      const children: any = await this.queryService.GetChildrenPositions(id);
+      if (children.length == 0) {
+        return c.json({ data: null, message: "No children positions found" });
+      }
+      return c.json({ data: children, message: "Children positions fetched." });
+    } catch (error: Error | any) {
+      return c.json({ error: error.message });
+    }
+  };
 }
 
 export default PositionController;
