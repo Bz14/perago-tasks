@@ -41,6 +41,19 @@ class PositionController {
       return c.json({ error: error.message }, 500);
     }
   };
+
+  GetPositionById = async (c: Context) => {
+    try {
+      const id = c.req.param("id");
+      const position = await this.queryService.GetPositionById(id);
+      if (!position) {
+        return c.json({ data: null, message: "Position not found" });
+      }
+      return c.json({ data: position, message: "Position detail fetched" });
+    } catch (error: Error | any) {
+      return c.json({ error: error.message });
+    }
+  };
 }
 
 export default PositionController;

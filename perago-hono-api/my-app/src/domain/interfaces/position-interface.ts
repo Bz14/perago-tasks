@@ -10,10 +10,12 @@ interface PositionRepositoryInterface {
 }
 
 interface PositionCommandServiceInterface {
-  CreatePosition: (name: string, description?: string, parentId?: string) => {};
+  CreatePosition: (name: string, description: string, parentId: string) => {};
 }
 
-interface PositionQueryServiceInterface {}
+interface PositionQueryServiceInterface {
+  GetPositionById: (id: string) => {};
+}
 
 export type {
   PositionRepositoryInterface,

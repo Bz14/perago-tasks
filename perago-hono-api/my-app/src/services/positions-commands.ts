@@ -1,6 +1,9 @@
-import type { PositionRepositoryInterface } from "../domain/interfaces/position-interface.js";
+import type {
+  PositionRepositoryInterface,
+  PositionCommandServiceInterface,
+} from "../domain/interfaces/position-interface.js";
 import Position from "../domain/Entities/position-entity.js";
-class PositionCommandService {
+class PositionCommandService implements PositionCommandServiceInterface {
   private positionRepository: PositionRepositoryInterface;
   constructor(repository: PositionRepositoryInterface) {
     this.positionRepository = repository;
@@ -8,8 +11,8 @@ class PositionCommandService {
 
   CreatePosition = async (
     name: string,
-    description: string,
-    parentId: string
+    description: string | null,
+    parentId: string | null
   ): Promise<Position> => {
     try {
       const position = new Position(name, description, parentId);
