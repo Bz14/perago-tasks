@@ -89,11 +89,26 @@ class PositionController {
         name,
         description
       );
+
       return c.json({
         data: result,
         message: "Position updated successfully.",
       });
     } catch (error: Error | any) {
+      return c.json({ error: error.message });
+    }
+  };
+
+  DeletePosition = async (c: Context) => {
+    try {
+      const id = c.req.param("id");
+      const _ = await this.commandService.DeletePosition(id);
+      return c.json({
+        data: null,
+        message: "Position deleted successfully",
+      });
+    } catch (error: Error | any) {
+      console.log(error);
       return c.json({ error: error.message });
     }
   };

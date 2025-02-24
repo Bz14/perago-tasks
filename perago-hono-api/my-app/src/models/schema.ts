@@ -4,7 +4,7 @@ import {
   varchar,
   text,
   timestamp,
-  unique,
+  serial,
 } from "drizzle-orm/pg-core";
 
 const positions = pgTable("positions", {
@@ -13,7 +13,7 @@ const positions = pgTable("positions", {
   description: text().notNull(),
   createdAt: timestamp().notNull().defaultNow(),
   parentId: uuid("parent_id").references((): any => positions.id, {
-    onDelete: "set null",
+    onDelete: "cascade",
   }),
 });
 

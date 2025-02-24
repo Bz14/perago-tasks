@@ -10,11 +10,14 @@ interface PositionRepositoryInterface {
   GetChildPosition: (id: string) => {};
   GetAllPositions: () => {};
   UpdatePosition: (id: string, name: string, description: string) => {};
+  DeletePositionById: (id: string) => {};
+  GetPositionsByParentId: (parentId: string) => {};
 }
 
 interface PositionCommandServiceInterface {
   CreatePosition: (name: string, description: string, parentId: string) => {};
   UpdatePosition: (id: string, name: string, description: string) => {};
+  DeletePosition: (id: string) => {};
 }
 
 interface PositionQueryServiceInterface {

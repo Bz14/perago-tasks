@@ -69,6 +69,28 @@ class PositionCommandService implements PositionCommandServiceInterface {
       throw new Error(error);
     }
   };
+
+  DeletePosition = async (id: string) => {
+    try {
+      const pos: any = await this.positionRepository.GetPositionById(id);
+      if (!pos) {
+        throw new Error("Position not found");
+      }
+      console.log(pos);
+
+      if (pos.parentId == null) {
+        const children: any =
+          await this.positionRepository.GetPositionsByParentId(pos.id);
+        if (children.length > 0) {
+          throw new Error(`Can't delete the top hierarchy ${pos.name}`);
+        }
+      }
+      const position = await this.positionRepository.DeletePositionById(id);
+      return position;
+    } catch (error: Error | any) {
+      throw new Error(error);
+    }
+  };
 }
 
 export default PositionCommandService;

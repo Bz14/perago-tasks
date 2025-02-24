@@ -22,5 +22,6 @@ positionsRoute.get(
 );
 positionsRoute.post("/position", positionsController.CreatePosition);
 positionsRoute.put("/position/:id", positionsController.UpdatePosition);
+positionsRoute.delete("/position/:id", positionsController.DeletePosition);
 
 export default positionsRoute;

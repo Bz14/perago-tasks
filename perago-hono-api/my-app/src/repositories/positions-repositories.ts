@@ -37,14 +37,25 @@ class PositionRepositories implements PositionRepositoryInterface {
   };
 
   GetAllPositions = async () => {
-    return db.select().from(positions);
+    return await db.select().from(positions);
   };
   UpdatePosition = async (id: string, name: string, description: string) => {
-    return db
+    return await db
       .update(positions)
       .set({ name, description })
       .where(eq(positions.id, id))
       .returning();
+  };
+
+  DeletePositionById = async (id: string) => {
+    return await db.delete(positions).where(eq(positions.id, id));
+  };
+
+  GetPositionsByParentId = async (parentId: string) => {
+    return await db
+      .select()
+      .from(positions)
+      .where(eq(positions.parentId, parentId));
   };
 }
 
