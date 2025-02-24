@@ -6,6 +6,7 @@ interface PositionRepositoryInterface {
     description: string | null;
     parentId: string | null;
   }) => {};
+  CheckNullParentPosition: () => {};
 }
 
 interface PositionCommandServiceInterface {

@@ -13,6 +13,15 @@ class PositionCommandService {
   ): Promise<Position> => {
     try {
       const position = new Position(name, description, parentId);
+
+      if (!parentId) {
+        const nullCount: any =
+          await this.positionRepository.CheckNullParentPosition();
+        if (nullCount.length > 0) {
+          throw new Error("Only one null parent allowed");
+        }
+      }
+
       if (parentId) {
         const parent = await this.positionRepository.GetPositionById(parentId);
         if (!parent) {

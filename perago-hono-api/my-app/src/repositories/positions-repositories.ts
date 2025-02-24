@@ -1,5 +1,4 @@
-import type Position from "../domain/Entities/position-entity.js";
-import { eq } from "drizzle-orm";
+import { eq, isNull, count } from "drizzle-orm";
 import { db } from "../config/db.js";
 import positions from "../models/schema.js";
 import type { PositionRepositoryInterface } from "../domain/interfaces/position-interface.js";
@@ -27,6 +26,10 @@ class PositionRepositories implements PositionRepositoryInterface {
     } catch (error: Error | any) {
       throw new Error(error.message);
     }
+  };
+
+  CheckNullParentPosition = async () => {
+    return await db.select().from(positions).where(isNull(positions.parentId));
   };
 }
 
