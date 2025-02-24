@@ -14,11 +14,12 @@ const positionsController = new PositionController(
 
 const positionsRoute = new Hono({ strict: false });
 
-positionsRoute.post("/positions", positionsController.CreatePosition);
+positionsRoute.get("/positions", positionsController.GetAllPositions);
 positionsRoute.get("/position/:id", positionsController.GetPositionById);
 positionsRoute.get(
   "/position/children/:id",
   positionsController.GetPositionChildren
 );
+positionsRoute.post("/position", positionsController.CreatePosition);
 
 export default positionsRoute;

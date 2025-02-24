@@ -1,5 +1,6 @@
 import type { PositionRepositoryInterface } from "../domain/interfaces/position-interface.js";
 import type { PositionQueryServiceInterface } from "../domain/interfaces/position-interface.js";
+import buildTree from "../utils/buildTree.js";
 class PositionQueryService implements PositionQueryServiceInterface {
   private positionRepository: PositionRepositoryInterface;
   constructor(repository: PositionRepositoryInterface) {
@@ -26,6 +27,16 @@ class PositionQueryService implements PositionQueryServiceInterface {
       return children;
     } catch (error: Error | any) {
       throw new Error(error);
+    }
+  };
+
+  GetAllPositions = async () => {
+    try {
+      const positions: any = await this.positionRepository.GetAllPositions();
+      const tree = buildTree(positions, null);
+      return tree;
+    } catch (error: Error | any) {
+      throw new error(error);
     }
   };
 }

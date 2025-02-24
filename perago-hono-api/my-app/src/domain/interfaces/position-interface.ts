@@ -8,6 +8,7 @@ interface PositionRepositoryInterface {
   }) => {};
   CheckNullParentPosition: () => {};
   GetChildPosition: (id: string) => {};
+  GetAllPositions: () => {};
 }
 
 interface PositionCommandServiceInterface {
@@ -17,6 +18,7 @@ interface PositionCommandServiceInterface {
 interface PositionQueryServiceInterface {
   GetPositionById: (id: string) => {};
   GetChildrenPositions: (id: string) => {};
+  GetAllPositions: () => {};
 }
 
 export type {

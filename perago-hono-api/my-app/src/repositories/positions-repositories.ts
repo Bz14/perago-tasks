@@ -35,6 +35,10 @@ class PositionRepositories implements PositionRepositoryInterface {
   GetChildPosition = async (id: string) => {
     return await db.select().from(positions).where(eq(positions.parentId, id));
   };
+
+  GetAllPositions = async () => {
+    return db.select().from(positions);
+  };
 }
 
 export default PositionRepositories;
