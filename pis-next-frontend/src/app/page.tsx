@@ -12,14 +12,14 @@ export default function Home() {
         </p>
 
         <div className="mt-6 space-x-4">
-          <Link href="/positions" passHref>
+          <Link href="/positions/view" passHref>
             <Button className="bg-gray-400 text-customBlue hover:bg-gray-500 p-2 rounded-lg">
               View Positions
             </Button>
           </Link>
-          <Link href="/create" passHref>
-            <Button className="bg-white text-blue-600 border p-2 rounded-lg hover:bg-gray-200">
-              Create Position
+          <Link href="/positions/create" passHref>
+            <Button className="bg-white text-customBlue border p-2 rounded-lg hover:bg-gray-200">
+              Add Position
             </Button>
           </Link>
         </div>
