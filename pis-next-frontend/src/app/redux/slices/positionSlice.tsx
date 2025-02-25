@@ -25,7 +25,7 @@ export const GetChoices = createAsyncThunk(
   async (_, thunkApi) => {
     try {
       const response = await positionApi.getChoices();
-      return response;
+      return response.data;
     } catch (error: Error | any) {
       return thunkApi.rejectWithValue(error.response.data.message);
     }
@@ -68,7 +68,7 @@ const positionSlice = createSlice({
       .addCase(CreateNewPosition.rejected, (state, action) => {
         state.loading = false;
         state.success = false;
-        state.error = (action.payload as string) ?? "An error occurred";
+        state.error = action.payload;
       });
 
     builder
@@ -83,7 +83,7 @@ const positionSlice = createSlice({
       .addCase(GetChoices.rejected, (state, action) => {
         state.loading = false;
         state.success = false;
-        state.error = (action.payload as string) ?? "An error occurred";
+        state.error = action.payload;
       });
   },
 });

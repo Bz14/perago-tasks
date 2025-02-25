@@ -20,12 +20,7 @@ class PositionRepositories implements PositionRepositoryInterface {
     description: string | null;
     parentId: string | null;
   }) => {
-    try {
-      const [position] = await db.insert(positions).values(data).returning();
-      return position;
-    } catch (error: Error | any) {
-      throw new Error(error.message);
-    }
+    return await db.insert(positions).values(data).returning();
   };
 
   CheckNullParentPosition = async () => {

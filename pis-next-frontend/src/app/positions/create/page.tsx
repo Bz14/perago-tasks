@@ -24,7 +24,7 @@ import { resetInitialState } from "@/app/redux/slices/positionSlice";
 type FormData = {
   name: string;
   description: string;
-  parentPosition: string;
+  parentId: string;
 };
 
 const schema = yup.object().shape({
@@ -35,7 +35,7 @@ const schema = yup.object().shape({
   description: yup
     .string()
     .min(10, "description must be at least 10 characters!"),
-  parentPosition: yup.string(),
+  parentId: yup.string(),
 });
 
 const CreatePosition = () => {
@@ -48,13 +48,13 @@ const CreatePosition = () => {
     defaultValues: {
       name: "",
       description: "",
-      parentPosition: "",
+      parentId: "",
     },
     mode: "all",
     resolver: yupResolver(schema),
   });
-  const { register, handleSubmit, formState, reset } = form;
-  const { errors, isSubmitSuccessful, isSubmitting } = formState;
+  const { register, handleSubmit, formState, reset, setValue } = form;
+  const { errors, isSubmitting } = formState;
 
   useEffect(() => {
     dispatch(GetChoices());
@@ -67,13 +67,13 @@ const CreatePosition = () => {
 
   useEffect(() => {
     if (success) {
-      reset();
-      dispatch(resetInitialState());
+      setTimeout(() => {
+        reset();
+        dispatch(resetInitialState());
+      }, 1000);
     }
-  }, [success]);
-
+  }, [success, reset, dispatch]);
   const onSubmit = async (data: FormData) => {
-    console.log("Data", data);
     dispatch(CreateNewPosition(data));
   };
 
@@ -83,7 +83,7 @@ const CreatePosition = () => {
         Create New Position
       </h2>
 
-      {success && isSubmitSuccessful && (
+      {success && (
         <Notification color="green">
           Position created successfully!
         </Notification>
@@ -126,10 +126,10 @@ const CreatePosition = () => {
           <Select
             label="Department"
             placeholder="Select department"
-            data={["Engineering", "Marketing", "HR", "Sales"]}
-            {...register("parentPosition")}
-            error={errors.parentPosition?.message}
-            onChange={() => console.log("Hello")}
+            data={choices.length > 0 ? choices : ["None"]}
+            {...register("parentId")}
+            error={errors.parentId?.message}
+            onChange={(value) => setValue("parentId", value)}
             classNames={{
               input:
                 "border-gray-300 p-2 focus:ring-customBlue rounded-lg w-full mt-1 outline-none text-gray-500",

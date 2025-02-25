@@ -42,12 +42,14 @@ class PositionQueryService implements PositionQueryServiceInterface {
   GetPositionChoices = async () => {
     try {
       const positions: any = await this.positionRepository.GetAllPositions();
-      const choices = positions.map((position: any) => {
+      let choices = positions.map((position: any) => {
         return {
           value: position.id,
           label: position.name,
         };
       });
+
+      choices.unshift({ value: "null", label: "None" });
       return choices;
     } catch (error: Error | any) {
       throw new Error(error.message);

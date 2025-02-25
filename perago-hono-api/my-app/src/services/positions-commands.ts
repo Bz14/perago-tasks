@@ -17,7 +17,7 @@ class PositionCommandService implements PositionCommandServiceInterface {
     try {
       const position = new Position(name, description, parentId);
 
-      if (!parentId) {
+      if (parentId == "null") {
         const nullCount: any =
           await this.positionRepository.CheckNullParentPosition();
         if (nullCount.length > 0) {
@@ -27,6 +27,7 @@ class PositionCommandService implements PositionCommandServiceInterface {
 
       if (parentId) {
         const parent = await this.positionRepository.GetPositionById(parentId);
+        console.log(parent);
         if (!parent) {
           throw new Error("Parent position not found.");
         }

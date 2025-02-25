@@ -12,16 +12,17 @@ const createPosition = async (data: {
     console.log(response.data);
     return response.data;
   } catch (error: Error | any) {
-    throw new Error(error.response.data.message);
+    console.log(error.response.data.error);
+    throw new Error(error.response.data.error);
   }
 };
 
 const getChoices = async () => {
   try {
-    const response = await axios.post(`${URL}/positions/choices`);
+    const response = await axios.get(`${URL}/position/choices`);
     return response.data;
   } catch (error: Error | any) {
-    throw new Error(error.response.data.message);
+    throw new Error(error.response.data.error);
   }
 };
 
