@@ -24,6 +24,7 @@ interface PositionQueryServiceInterface {
   GetPositionById: (id: string) => {};
   GetChildrenPositions: (id: string) => {};
   GetAllPositions: () => {};
+  GetPositionChoices: () => {};
 }
 
 export type {

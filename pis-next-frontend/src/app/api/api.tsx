@@ -8,13 +8,23 @@ const createPosition = async (data: {
   parentPosition: string;
 }) => {
   try {
-    const response = await axios.post(`${URL}/positions`, data);
+    const response = await axios.post(`${URL}/position`, data);
+    console.log(response.data);
     return response.data;
   } catch (error: Error | any) {
     throw new Error(error.response.data.message);
   }
 };
 
-const positionApi = { createPosition };
+const getChoices = async () => {
+  try {
+    const response = await axios.post(`${URL}/positions/choices`);
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(error.response.data.message);
+  }
+};
+
+const positionApi = { createPosition, getChoices };
 
 export default positionApi;

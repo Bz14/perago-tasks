@@ -112,6 +112,18 @@ class PositionController {
       return c.json({ error: error.message });
     }
   };
+
+  GetPositionChoices = async (c: Context) => {
+    try {
+      const positions: any = await this.queryService.GetPositionChoices();
+      if (positions.length == 0) {
+        return c.json({ data: null, message: "No positions found" });
+      }
+      return c.json({ data: positions, message: "Position choices fetched" });
+    } catch (error: Error | any) {
+      return c.json({ error: error.message });
+    }
+  };
 }
 
 export default PositionController;

@@ -2,6 +2,7 @@
 
 import { useForm, FieldErrors } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect } from "react";
 import * as yup from "yup";
 import {
   TextInput,
@@ -13,7 +14,12 @@ import {
 } from "@mantine/core";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/app/redux/store/store";
-import { CreateNewPosition } from "@/app/redux/slices/positionSlice";
+import {
+  CreateNewPosition,
+  GetChoices,
+} from "@/app/redux/slices/positionSlice";
+
+import { resetInitialState } from "@/app/redux/slices/positionSlice";
 
 type FormData = {
   name: string;
@@ -34,7 +40,7 @@ const schema = yup.object().shape({
 
 const CreatePosition = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { loading, success, error } = useSelector(
+  const { loading, success, error, choices } = useSelector(
     (state: RootState) => state.position
   );
 
@@ -50,13 +56,24 @@ const CreatePosition = () => {
   const { register, handleSubmit, formState, reset } = form;
   const { errors, isSubmitSuccessful, isSubmitting } = formState;
 
+  useEffect(() => {
+    dispatch(GetChoices());
+  }, []);
+
   const onError = (errors: FieldErrors) => {
     reset();
     console.log(errors);
   };
 
+  useEffect(() => {
+    if (success) {
+      reset();
+      dispatch(resetInitialState());
+    }
+  }, [success]);
+
   const onSubmit = async (data: FormData) => {
-    console.log(data);
+    console.log("Data", data);
     dispatch(CreateNewPosition(data));
   };
 

@@ -39,6 +39,20 @@ class PositionQueryService implements PositionQueryServiceInterface {
       throw new error(error);
     }
   };
+  GetPositionChoices = async () => {
+    try {
+      const positions: any = await this.positionRepository.GetAllPositions();
+      const choices = positions.map((position: any) => {
+        return {
+          value: position.id,
+          label: position.name,
+        };
+      });
+      return choices;
+    } catch (error: Error | any) {
+      throw new Error(error.message);
+    }
+  };
 }
 
 export default PositionQueryService;

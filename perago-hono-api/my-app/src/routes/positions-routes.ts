@@ -15,6 +15,7 @@ const positionsController = new PositionController(
 const positionsRoute = new Hono({ strict: false });
 
 positionsRoute.get("/positions", positionsController.GetAllPositions);
+positionsRoute.get("/position/choices", positionsController.GetPositionChoices);
 positionsRoute.get("/position/:id", positionsController.GetPositionById);
 positionsRoute.get(
   "/position/children/:id",
