@@ -4,6 +4,7 @@ import "./globals.css";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import Navbar from "./components/nav";
 import Footer from "./components/footer";
+import Providers from "./redux/provider";
 
 export const metadata: Metadata = {
   title: "Organizational hierarchy.",
@@ -21,11 +22,13 @@ export default function RootLayout({
         <ColorSchemeScript />
       </head>
       <body>
-        <MantineProvider>
-          <Navbar />
-          {children}
-          <Footer />
-        </MantineProvider>
+        <Providers>
+          <MantineProvider>
+            <Navbar />
+            {children}
+            <Footer />
+          </MantineProvider>
+        </Providers>
       </body>
     </html>
   );

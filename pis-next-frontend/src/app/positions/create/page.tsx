@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FieldErrors } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
@@ -12,6 +11,9 @@ import {
   Loader,
   Textarea,
 } from "@mantine/core";
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/app/redux/store/store";
+import { CreateNewPosition } from "@/app/redux/slices/positionSlice";
 
 type FormData = {
   name: string;
@@ -31,8 +33,10 @@ const schema = yup.object().shape({
 });
 
 const CreatePosition = () => {
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(null);
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, success, error } = useSelector(
+    (state: RootState) => state.position
+  );
 
   const form = useForm({
     defaultValues: {
@@ -46,9 +50,14 @@ const CreatePosition = () => {
   const { register, handleSubmit, formState, reset } = form;
   const { errors, isSubmitSuccessful, isSubmitting } = formState;
 
-  const onSubmit = async (data: FormData) => {
+  const onError = (errors: FieldErrors) => {
     reset();
-    console.log("Submitting data", data);
+    console.log(errors);
+  };
+
+  const onSubmit = async (data: FormData) => {
+    console.log(data);
+    dispatch(CreateNewPosition(data));
   };
 
   return (
@@ -57,13 +66,16 @@ const CreatePosition = () => {
         Create New Position
       </h2>
 
-      {success && (
+      {success && isSubmitSuccessful && (
         <Notification color="green">
           Position created successfully!
         </Notification>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-6 p-4">
+      <form
+        onSubmit={handleSubmit(onSubmit, onError)}
+        className="space-y-4 mt-6 p-4"
+      >
         <div>
           <TextInput
             label="Position Title"
@@ -109,12 +121,17 @@ const CreatePosition = () => {
             }}
           />
         </div>
+        {error && <p style={{ color: "red", fontSize: "12px" }}>{error}</p>}
         <Button
           type="submit"
           fullWidth
           className="bg-customBlue hover:bg-gray-500 text-white"
         >
-          {loading ? <Loader color="white" size="sm" /> : "Create Position"}
+          {loading && isSubmitting ? (
+            <Loader color="white" size="sm" />
+          ) : (
+            "Create Position"
+          )}
         </Button>
       </form>
     </div>
