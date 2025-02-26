@@ -91,7 +91,11 @@ class PositionController {
       );
 
       return c.json({
-        data: result,
+        data: {
+          id: result[0].id,
+          name: result[0].name,
+          description: result[0].description,
+        },
         message: "Position updated successfully.",
       });
     } catch (error: Error | any) {

@@ -8,14 +8,23 @@ import {
   Avatar,
   Badge,
   Loader,
+  TextInput,
+  Textarea,
 } from "@mantine/core";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
+import {
+  IconEdit,
+  IconTrash,
+  IconPlus,
+  IconAlertCircle,
+} from "@tabler/icons-react";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/app/redux/store/store";
-import { GetPositionById } from "@/app/redux/slices/positionSlice";
-import { IconAlertCircle } from "@tabler/icons-react";
+import {
+  GetPositionById,
+  UpdatePosition,
+} from "@/app/redux/slices/positionSlice";
 
 const PositionDetails = () => {
   const { id } = useParams();
@@ -23,19 +32,39 @@ const PositionDetails = () => {
   const { loading, error, position, message } = useSelector(
     (state: RootState) => state.position
   );
+  const [isEdit, setIsEdit] = useState(false);
+  const [data, setData] = useState({
+    name: "",
+    description: "",
+  });
 
   useEffect(() => {
-    dispatch(GetPositionById(id));
+    if (id) {
+      dispatch(GetPositionById(id));
+    }
   }, [id]);
+
+  useEffect(() => {
+    if (position) {
+      setData({
+        name: position.name || "",
+        description: position.description || "",
+      });
+    }
+  }, [position]);
+
+  const handleSave = () => {
+    dispatch(
+      UpdatePosition({ id: id, name: data.name, description: data.description })
+    );
+    setIsEdit(false);
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen p-6 text-customBlue bg-white">
       {loading && <Loader />}
       {!position && !loading && (
-        <div
-          className="flex flex-col items-center align-middle mt-10
-          "
-        >
+        <div className="flex flex-col items-center align-middle mt-10">
           <IconAlertCircle size={40} className="text-customBlue" />
           <h1 className="text-customBlue">{message}</h1>
         </div>
@@ -47,24 +76,37 @@ const PositionDetails = () => {
             radius="xl"
             className="bg-customBlue text-white text-xl shadow-xl"
           >
-            {position && position.name.charAt(0)}
+            {position && position.name && position.name.charAt(0)}
           </Avatar>
           <div>
-            <Text className="text-2xl font-bold text-customBlue">
-              {position && position.name}
-            </Text>
+            {isEdit ? (
+              <TextInput
+                value={data.name}
+                onChange={(e) => setData({ ...data, name: e.target.value })}
+                className="text-2xl font-bold text-customBlue"
+              />
+            ) : (
+              <Text className="text-2xl font-bold text-customBlue">
+                {position?.name}
+              </Text>
+            )}
             <Badge size="lg" className="mt-1 bg-customBlue text-white">
-              {position && position.hierarchy}
+              {position?.hierarchy}
             </Badge>
           </div>
         </div>
 
         <Divider className="my-4" />
-        <Text className="text-customBlue">
-          {position && position.description}
-        </Text>
+        {isEdit ? (
+          <Textarea
+            value={data.description}
+            onChange={(e) => setData({ ...data, name: e.target.value })}
+          />
+        ) : (
+          <Text className="text-customBlue">{position?.description}</Text>
+        )}
 
-        {position && position.children && position.children.length > 0 && (
+        {position?.children && position.children.length > 0 && (
           <>
             <Divider className="my-4" />
             <Text className="text-xl font-semibold text-customBlue">
@@ -87,10 +129,13 @@ const PositionDetails = () => {
         {error && <p style={{ color: "red", fontSize: "12px" }}>{error}</p>}
         <div className="flex justify-center items-center space-x-2 mt-6">
           <Button
-            leftSection={<IconEdit size={18} />}
+            leftSection={
+              isEdit ? <IconPlus size={18} /> : <IconEdit size={18} />
+            }
             className="mt-6 bg-customBlue text-white"
+            onClick={isEdit ? handleSave : () => setIsEdit(true)}
           >
-            Update
+            {isEdit ? "Save" : "Update"}
           </Button>
           <Button
             leftSection={<IconTrash size={18} />}

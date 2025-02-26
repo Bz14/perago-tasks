@@ -17,9 +17,6 @@ import { AppDispatch, RootState } from "@/app/redux/store/store";
 import {
   CreateNewPosition,
   GetChoices,
-} from "@/app/redux/slices/positionSlice";
-
-import {
   resetSuccessState,
   resetErrorState,
 } from "@/app/redux/slices/positionSlice";

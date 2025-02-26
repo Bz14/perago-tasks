@@ -67,6 +67,31 @@ export const GetPositionById = createAsyncThunk(
   }
 );
 
+export const UpdatePosition = createAsyncThunk(
+  "position/update",
+  async (
+    {
+      id,
+      name,
+      description,
+    }: { id: string | any; name: string; description: string },
+    thunkApi
+  ) => {
+    try {
+      const response = await positionApi.updatePosition(id, {
+        name,
+        description,
+      });
+      console.log("Here", response);
+      return response;
+    } catch (error: Error | any) {
+      return thunkApi.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
+
 type OrgNode = {
   id: string;
   name: string;
@@ -163,6 +188,30 @@ const positionSlice = createSlice({
         state.message = action.payload.message;
       })
       .addCase(GetPositionById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+    builder
+      .addCase(UpdatePosition.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(UpdatePosition.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.position = {
+          ...state.position,
+          name: action.payload.data.name,
+          description: action.payload.data.description,
+        };
+        const pos = state.positions.find(
+          (p) => p.id === action.payload.data.id
+        );
+        if (pos) {
+          pos.name = action.payload.name;
+          pos.description = action.payload.description;
+        }
+      })
+      .addCase(UpdatePosition.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

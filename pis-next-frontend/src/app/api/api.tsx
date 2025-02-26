@@ -42,11 +42,27 @@ const getPositionById = async (id: string) => {
   }
 };
 
+const updatePosition = async (
+  id: string,
+  data: { name: string; description: string }
+) => {
+  try {
+    const response = await axios.put(`${URL}/position/${id}`, {
+      name: data.name,
+      description: data.description,
+    });
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(error.response.data.error);
+  }
+};
+
 const positionApi = {
   createPosition,
   getChoices,
   getPositions,
   getPositionById,
+  updatePosition,
 };
 
 export default positionApi;
