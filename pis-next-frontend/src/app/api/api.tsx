@@ -9,10 +9,8 @@ const createPosition = async (data: {
 }) => {
   try {
     const response = await axios.post(`${URL}/position`, data);
-    console.log(response.data);
     return response.data;
   } catch (error: Error | any) {
-    console.log(error.response.data.error);
     throw new Error(error.response.data.error);
   }
 };

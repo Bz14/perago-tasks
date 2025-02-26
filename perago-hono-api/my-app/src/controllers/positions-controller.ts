@@ -4,7 +4,6 @@ import type {
 } from "../domain/interfaces/position-interface.js";
 
 import type { Context } from "hono";
-import Position from "../domain/Entities/position-entity.js";
 
 class PositionController {
   private commandService: PositionCommandServiceInterface;
@@ -23,7 +22,7 @@ class PositionController {
       const result: any = await this.commandService.CreatePosition(
         name,
         description,
-        parentId
+        parentId != "" ? parentId : null
       );
       return c.json(
         {
@@ -38,6 +37,7 @@ class PositionController {
         201
       );
     } catch (error: Error | any) {
+      console.log(error.message);
       return c.json({ error: error.message }, 500);
     }
   };

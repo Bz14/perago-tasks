@@ -19,12 +19,15 @@ import {
   GetChoices,
 } from "@/app/redux/slices/positionSlice";
 
-import { resetInitialState } from "@/app/redux/slices/positionSlice";
+import {
+  resetSuccessState,
+  resetErrorState,
+} from "@/app/redux/slices/positionSlice";
 
 type FormData = {
   name: string;
   description: string;
-  parentId: string;
+  parentPosition: string;
 };
 
 const schema = yup.object().shape({
@@ -57,6 +60,10 @@ const CreatePosition = () => {
   const { errors, isSubmitting } = formState;
 
   useEffect(() => {
+    dispatch(resetSuccessState());
+  }, []);
+
+  useEffect(() => {
     dispatch(GetChoices());
   }, []);
 
@@ -69,12 +76,23 @@ const CreatePosition = () => {
     if (success) {
       setTimeout(() => {
         reset();
-        dispatch(resetInitialState());
+        dispatch(resetSuccessState());
       }, 1000);
     }
-  }, [success, reset, dispatch]);
+  }, [success]);
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        reset();
+        dispatch(resetErrorState());
+      }, 1000);
+    }
+  }, [error]);
+
   const onSubmit = async (data: FormData) => {
     dispatch(CreateNewPosition(data));
+    // dispatch(updateChoices(data.parentPosition));
   };
 
   return (
@@ -126,7 +144,7 @@ const CreatePosition = () => {
           <Select
             label="Department"
             placeholder="Select department"
-            data={choices.length > 0 ? choices : ["None"]}
+            data={choices.length > 0 ? choices : []}
             {...register("parentId")}
             error={errors.parentId?.message}
             onChange={(value) => setValue("parentId", value)}

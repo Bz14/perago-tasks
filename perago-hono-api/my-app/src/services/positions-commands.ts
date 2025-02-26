@@ -17,17 +17,17 @@ class PositionCommandService implements PositionCommandServiceInterface {
     try {
       const position = new Position(name, description, parentId);
 
-      if (parentId == "null") {
+      if (!parentId) {
         const nullCount: any =
           await this.positionRepository.CheckNullParentPosition();
+
         if (nullCount.length > 0) {
-          throw new Error("Only one null parent allowed");
+          throw new Error("Only one parent allowed");
         }
       }
 
       if (parentId) {
         const parent = await this.positionRepository.GetPositionById(parentId);
-        console.log(parent);
         if (!parent) {
           throw new Error("Parent position not found.");
         }

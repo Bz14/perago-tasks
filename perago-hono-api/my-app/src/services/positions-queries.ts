@@ -39,6 +39,7 @@ class PositionQueryService implements PositionQueryServiceInterface {
       throw new error(error);
     }
   };
+
   GetPositionChoices = async () => {
     try {
       const positions: any = await this.positionRepository.GetAllPositions();
@@ -49,12 +50,11 @@ class PositionQueryService implements PositionQueryServiceInterface {
         };
       });
 
-      choices.unshift({ value: "null", label: "None" });
+      choices.unshift({ value: "", label: "None" });
       return choices;
     } catch (error: Error | any) {
       throw new Error(error.message);
     }
   };
 }
-
 export default PositionQueryService;
