@@ -1,97 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  IconAlertCircle,
   IconChevronDown,
   IconChevronRight,
   IconPlus,
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/app/redux/store/store";
+import { GetPositions } from "@/app/redux/slices/positionSlice";
+import { Loader } from "@mantine/core";
 
 type OrgNode = {
+  id: string;
   name: string;
+  description: string;
   children?: OrgNode[];
-};
-
-const orgStructure: OrgNode = {
-  name: "CEO",
-  children: [
-    {
-      name: "CTO",
-      children: [
-        {
-          name: "Project Manager",
-          children: [
-            {
-              name: "Product Owner",
-              children: [
-                {
-                  name: "Tech Lead",
-                  children: [
-                    {
-                      name: "Frontend Developer",
-                      children: [
-                        {
-                          name: "React Developer",
-                          children: [
-                            {
-                              name: "React Native Developer",
-                              children: [
-                                {
-                                  name: "Developer",
-                                  children: [
-                                    {
-                                      name: "Developer",
-                                      children: [{ name: "Dev" }],
-                                    },
-                                  ],
-                                },
-                              ],
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                    { name: "Backend Developer" },
-                    { name: "DevOps Engineer" },
-                  ],
-                },
-                { name: "QA Engineer" },
-                { name: "Scrum Master" },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      name: "CFO",
-      children: [
-        {
-          name: "Chef Accountant",
-          children: [
-            { name: "Financial Analyst" },
-            { name: "Account and Payable" },
-          ],
-        },
-        { name: "Internal Audit" },
-      ],
-    },
-    {
-      name: "COO",
-      children: [
-        { name: "Product Manager" },
-        { name: "Operation Manager" },
-        { name: "Customer Relation" },
-      ],
-    },
-    { name: "HR" },
-  ],
 };
 
 const OrgNodeComponent = ({ node }: { node: OrgNode }) => {
   const route = useRouter();
-  const id = 1;
   const [isOpen, setIsOpen] = useState(false);
   const hasChildren = node.children && node.children.length > 0;
 
@@ -117,7 +47,7 @@ const OrgNodeComponent = ({ node }: { node: OrgNode }) => {
           </span>
           <IconPlus
             size={15}
-            onClick={() => route.push(`/positions/view/${id}`)}
+            onClick={() => route.push(`/positions/view/${node.id}`)}
           />
         </div>
       </div>
@@ -135,13 +65,36 @@ const OrgNodeComponent = ({ node }: { node: OrgNode }) => {
 };
 
 const OrgChart = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { error, loading, positions, message } = useSelector(
+    (state: RootState) => state.position
+  );
+
+  useEffect(() => {
+    dispatch(GetPositions());
+  }, []);
+
   return (
     <div className="md:max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg mt-28">
       <h2 className="text-2xl font-bold text-center text-customBlue">
         Organization Chart
       </h2>
       <div className="mt-2">
-        <OrgNodeComponent node={orgStructure} />
+        {loading && <Loader />}
+        {!positions && !loading && (
+          <div
+            className="flex flex-col items-center align-middle mt-10
+          "
+          >
+            <IconAlertCircle size={40} className="text-customBlue" />
+            <h1 className="text-customBlue">{message}</h1>
+          </div>
+        )}
+        {positions &&
+          positions.map((position: OrgNode, index: number) => (
+            <OrgNodeComponent key={index} node={position} />
+          ))}
+        {error && <p style={{ color: "red", fontSize: "12px" }}>{error}</p>}
       </div>
     </div>
   );

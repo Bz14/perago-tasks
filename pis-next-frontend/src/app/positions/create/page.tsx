@@ -34,7 +34,7 @@ const schema = yup.object().shape({
   name: yup
     .string()
     .required("position name is required!")
-    .min(3, "position name must be at least 3 characters!"),
+    .min(2, "position name must be at least 2 characters!"),
   description: yup
     .string()
     .min(10, "description must be at least 10 characters!"),

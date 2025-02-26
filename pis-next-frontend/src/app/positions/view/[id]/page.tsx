@@ -1,22 +1,45 @@
 "use client";
 
-import { Card, Text, Button, Divider, Avatar, Badge } from "@mantine/core";
-import { IconArrowLeft, IconEdit, IconTrash } from "@tabler/icons-react";
-
-const position = {
-  id: "1",
-  name: "CEO",
-  hierarchy: "Top Executive",
-  description:
-    "The Chief Executive Officer (CEO) oversees the entire organization.",
-  team: ["CTO", "CFO", "COO", "HR"],
-};
+import {
+  Card,
+  Text,
+  Button,
+  Divider,
+  Avatar,
+  Badge,
+  Loader,
+} from "@mantine/core";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "@/app/redux/store/store";
+import { GetPositionById } from "@/app/redux/slices/positionSlice";
+import { IconAlertCircle } from "@tabler/icons-react";
 
 const PositionDetails = () => {
-  if (!position) return <p>Loading...</p>;
+  const { id } = useParams();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error, position, message } = useSelector(
+    (state: RootState) => state.position
+  );
+
+  useEffect(() => {
+    dispatch(GetPositionById(id));
+  }, [id]);
 
   return (
     <div className="flex justify-center items-center min-h-screen p-6 text-customBlue bg-white">
+      {loading && <Loader />}
+      {!position && !loading && (
+        <div
+          className="flex flex-col items-center align-middle mt-10
+          "
+        >
+          <IconAlertCircle size={40} className="text-customBlue" />
+          <h1 className="text-customBlue">{message}</h1>
+        </div>
+      )}
       <Card shadow="xl" radius="lg" className="bg-white w-full max-w-2xl p-6">
         <div className="flex items-center space-x-4">
           <Avatar
@@ -24,40 +47,44 @@ const PositionDetails = () => {
             radius="xl"
             className="bg-customBlue text-white text-xl shadow-xl"
           >
-            {position.name.charAt(0)}
+            {position && position.name.charAt(0)}
           </Avatar>
           <div>
             <Text className="text-2xl font-bold text-customBlue">
-              {position.name}
+              {position && position.name}
             </Text>
             <Badge size="lg" className="mt-1 bg-customBlue text-white">
-              {position.hierarchy}
+              {position && position.hierarchy}
             </Badge>
           </div>
         </div>
 
         <Divider className="my-4" />
-        <Text className="text-customBlue">{position.description}</Text>
+        <Text className="text-customBlue">
+          {position && position.description}
+        </Text>
 
-        {position.team && position.team.length > 0 && (
+        {position && position.children && position.children.length > 0 && (
           <>
             <Divider className="my-4" />
             <Text className="text-xl font-semibold text-customBlue">
               Team Members
             </Text>
             <div className="mt-2 flex flex-wrap gap-2">
-              {position.team.map((member: string, index: number) => (
+              {position.children.map((member: any) => (
                 <Badge
-                  key={index}
+                  key={member.id}
                   className="text-white bg-customBlue"
                   size="md"
                 >
-                  {member}
+                  {member.name}
                 </Badge>
               ))}
             </div>
           </>
         )}
+
+        {error && <p style={{ color: "red", fontSize: "12px" }}>{error}</p>}
         <div className="flex justify-center items-center space-x-2 mt-6">
           <Button
             leftSection={<IconEdit size={18} />}

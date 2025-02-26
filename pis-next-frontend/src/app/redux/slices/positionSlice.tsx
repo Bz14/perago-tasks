@@ -37,32 +37,67 @@ export const GetChoices = createAsyncThunk(
   }
 );
 
+export const GetPositions = createAsyncThunk(
+  "position/positions",
+  async (_, thunkApi) => {
+    try {
+      const response = await positionApi.getPositions();
+      console.log("Here", response);
+      return response;
+    } catch (error: Error | any) {
+      return thunkApi.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
+
+export const GetPositionById = createAsyncThunk(
+  "position/position",
+  async (id: string | any, thunkApi) => {
+    try {
+      const response = await positionApi.getPositionById(id);
+      console.log(id, response.data);
+      return response;
+    } catch (error: Error | any) {
+      return thunkApi.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
+
+type OrgNode = {
+  id: string;
+  name: string;
+  description: string;
+  children?: OrgNode[];
+};
+
 interface PositionState {
-  positions: any[];
+  positions: OrgNode[];
   loading: boolean;
   error: string | null;
-  selectedPosition: any | null;
+  position: any | null;
   success: boolean;
   choices: any[];
+  message: string | null;
 }
 
 const initialState: PositionState = {
   positions: [],
   loading: false,
   error: null,
-  selectedPosition: null,
+  position: null,
   success: false,
   choices: [],
+  message: null,
 };
 
 const positionSlice = createSlice({
   name: "position",
   initialState,
   reducers: {
-    setSelectedPosition: (state, action) => {
-      state.selectedPosition = action.payload;
-    },
-
     updateChoices: (state, action) => {
       state.choices = [...state.choices, action.payload];
     },
@@ -103,14 +138,38 @@ const positionSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
       });
+
+    builder
+      .addCase(GetPositions.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(GetPositions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.positions = action.payload.data;
+      })
+      .addCase(GetPositions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(GetPositionById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(GetPositionById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.position = action.payload.data;
+        state.message = action.payload.message;
+      })
+      .addCase(GetPositionById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 
-export const {
-  setSelectedPosition,
-  resetSuccessState,
-  updateChoices,
-  resetErrorState,
-} = positionSlice.actions;
+export const { resetSuccessState, updateChoices, resetErrorState } =
+  positionSlice.actions;
 
 export default positionSlice.reducer;

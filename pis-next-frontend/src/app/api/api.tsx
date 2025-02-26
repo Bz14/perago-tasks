@@ -24,6 +24,29 @@ const getChoices = async () => {
   }
 };
 
-const positionApi = { createPosition, getChoices };
+const getPositions = async () => {
+  try {
+    const response = await axios.get(`${URL}/positions`);
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(error.response.data.error);
+  }
+};
+
+const getPositionById = async (id: string) => {
+  try {
+    const response = await axios.get(`${URL}/position/${id}`);
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(error.response.data.error);
+  }
+};
+
+const positionApi = {
+  createPosition,
+  getChoices,
+  getPositions,
+  getPositionById,
+};
 
 export default positionApi;

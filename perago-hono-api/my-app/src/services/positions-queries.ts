@@ -9,7 +9,9 @@ class PositionQueryService implements PositionQueryServiceInterface {
 
   GetPositionById = async (id: string) => {
     try {
-      const position = this.positionRepository.GetPositionById(id);
+      const position: any = await this.positionRepository.GetPositionById(id);
+      const children: any = await this.positionRepository.GetChildPosition(id);
+      position.children = children;
       return position;
     } catch (error: Error | any) {
       throw new Error(error.message);
