@@ -75,26 +75,27 @@ const OrgChart = () => {
   }, []);
 
   return (
-    <div className="md:max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg mt-28">
-      <h2 className="text-2xl font-bold text-center text-customBlue">
-        Organization Chart
-      </h2>
-      <div className="mt-2">
-        {loading && <Loader />}
-        {!positions && !loading && (
-          <div
-            className="flex flex-col items-center align-middle mt-10
+    <div className="min-h-screen">
+      <div className="md:max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg mt-28">
+        <h2 className="text-2xl font-bold text-center text-customBlue">
+          Organization Chart
+        </h2>
+        <div className="mt-2">
+          {loading && <Loader />}
+          {!positions && !loading && (
+            <div
+              className="flex flex-col items-center align-middle mt-10
           "
-          >
-            <IconAlertCircle size={40} className="text-customBlue" />
-            <h1 className="text-customBlue">{message}</h1>
-          </div>
-        )}
-        {positions &&
-          positions.map((position: OrgNode, index: number) => (
-            <OrgNodeComponent key={index} node={position} />
-          ))}
-        {error && <p style={{ color: "red", fontSize: "12px" }}>{error}</p>}
+            >
+              <IconAlertCircle size={40} className="text-customBlue" />
+              <h1 className="text-customBlue">{message}</h1>
+            </div>
+          )}
+          {positions &&
+            positions.map((position: OrgNode, index: number) => (
+              <OrgNodeComponent key={index} node={position} />
+            ))}
+        </div>
       </div>
     </div>
   );

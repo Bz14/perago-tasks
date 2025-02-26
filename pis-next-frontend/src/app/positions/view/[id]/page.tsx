@@ -7,7 +7,6 @@ import {
   Divider,
   Avatar,
   Badge,
-  Loader,
   TextInput,
   Textarea,
   Modal,
@@ -27,6 +26,8 @@ import {
   GetPositionById,
   UpdatePosition,
   DeletePosition,
+  resetErrorState,
+  resetSuccessState,
 } from "@/app/redux/slices/positionSlice";
 
 const PositionDetails = () => {
@@ -48,6 +49,22 @@ const PositionDetails = () => {
       dispatch(GetPositionById(id));
     }
   }, [id]);
+
+  useEffect(() => {
+    if (success) {
+      setTimeout(() => {
+        dispatch(resetSuccessState());
+      }, 1000);
+    }
+  }, [success]);
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        dispatch(resetErrorState());
+      }, 7000);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (position) {
@@ -76,8 +93,6 @@ const PositionDetails = () => {
 
   return (
     <div className="flex justify-center items-center min-h-screen p-6 text-customBlue bg-white">
-      {success && <Notification color="green">{message}</Notification>}
-      {loading && <Loader />}
       {!position && !loading && (
         <div className="flex flex-col items-center align-middle mt-10">
           <IconAlertCircle size={40} className="text-customBlue" />
@@ -86,7 +101,9 @@ const PositionDetails = () => {
       )}
       {position && (
         <Card shadow="xl" radius="lg" className="bg-white w-full max-w-2xl p-6">
-          <div className="flex items-center space-x-4">
+          {success && <Notification color="green">{message}</Notification>}
+          {error && <Notification color="red">{error}</Notification>}
+          <div className="flex items-center space-x-4 mt-2">
             <Avatar
               size={60}
               radius="xl"
@@ -106,9 +123,6 @@ const PositionDetails = () => {
                   {position?.name}
                 </Text>
               )}
-              <Badge size="lg" className="mt-1 bg-customBlue text-white">
-                {position?.hierarchy}
-              </Badge>
             </div>
           </div>
 
@@ -144,7 +158,6 @@ const PositionDetails = () => {
             </>
           )}
 
-          {error && <p style={{ color: "red", fontSize: "12px" }}>{error}</p>}
           <div className="flex justify-center items-center space-x-2 mt-6">
             <Button
               leftSection={

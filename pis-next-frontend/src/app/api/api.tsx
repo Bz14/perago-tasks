@@ -66,6 +66,15 @@ const deletePositionById = async (id: string) => {
   }
 };
 
+const login = async (data: { username: string; password: string }) => {
+  try {
+    const response = await axios.post(`${URL}/auth`, data);
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(error.response.data.error);
+  }
+};
+
 const positionApi = {
   createPosition,
   getChoices,
@@ -73,6 +82,7 @@ const positionApi = {
   getPositionById,
   updatePosition,
   deletePositionById,
+  login,
 };
 
 export default positionApi;

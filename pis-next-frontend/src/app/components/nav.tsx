@@ -2,9 +2,12 @@
 import { Burger, Drawer, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
+import { useSelector } from "react-redux";
+import { RootState } from "@/app/redux/store/store";
 
 const Navbar = () => {
   const [opened, { toggle, close }] = useDisclosure(false);
+  const { isLogged } = useSelector((state: RootState) => state.admin);
 
   return (
     <header className="bg-white text-customBlue px-6 py-4 shadow-md fixed w-full top-0 z-50 ">
@@ -17,19 +20,32 @@ const Navbar = () => {
           <Link href="/" className="hover:text-gray-400">
             Home
           </Link>
-          <Link href="/positions" className="hover:text-gray-400">
-            Positions
-          </Link>
+          {isLogged && (
+            <Link href="/positions/view" className="hover:text-gray-400">
+              View
+            </Link>
+          )}
+
           <Link href="/about" className="hover:text-gray-400">
             About
           </Link>
-          <Button
-            component={Link}
-            href="/create"
-            className="bg-customBlue text-white hover:bg-gray-400 hover:text-customBlue p-2 rounded-lg"
-          >
-            Create Position
-          </Button>
+          {isLogged ? (
+            <Button
+              component={Link}
+              href="/positions/create"
+              className="bg-customBlue text-white hover:bg-gray-400 hover:text-customBlue p-2 rounded-lg"
+            >
+              Create Position
+            </Button>
+          ) : (
+            <Button
+              component={Link}
+              href="/admin/login"
+              className="bg-customBlue text-white hover:bg-gray-400 hover:text-customBlue px-4 rounded-lg"
+            >
+              Get started
+            </Button>
+          )}
         </nav>
 
         <Burger opened={opened} onClick={toggle} className="md:hidden" />
