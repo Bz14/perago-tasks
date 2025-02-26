@@ -22,6 +22,20 @@
       "when": 1740388417833,
       "tag": "0002_crazy_hedge_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1740591920545,
+      "tag": "0003_jittery_lord_hawal",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1740592171055,
+      "tag": "0004_robust_naoko",
+      "breakpoints": true
     }
   ]
 }
