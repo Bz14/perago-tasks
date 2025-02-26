@@ -106,9 +106,9 @@ class PositionController {
   DeletePosition = async (c: Context) => {
     try {
       const id = c.req.param("id");
-      const _ = await this.commandService.DeletePosition(id);
+      const position = await this.commandService.DeletePosition(id);
       return c.json({
-        data: null,
+        data: position,
         message: "Position deleted successfully",
       });
     } catch (error: Error | any) {

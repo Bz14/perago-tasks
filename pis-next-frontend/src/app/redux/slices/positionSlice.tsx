@@ -92,6 +92,21 @@ export const UpdatePosition = createAsyncThunk(
   }
 );
 
+export const DeletePosition = createAsyncThunk(
+  "position/delete",
+  async (id: string | any, thunkApi) => {
+    try {
+      const response = await positionApi.deletePositionById(id);
+      console.log("Here", response);
+      return response;
+    } catch (error: Error | any) {
+      return thunkApi.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+);
+
 type OrgNode = {
   id: string;
   name: string;
@@ -212,6 +227,24 @@ const positionSlice = createSlice({
         }
       })
       .addCase(UpdatePosition.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      });
+
+    builder
+      .addCase(DeletePosition.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(DeletePosition.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message;
+        state.position = null;
+        const pos = state.positions.filter(
+          (p) => p.id !== action.payload.data.id
+        );
+        state.positions = pos;
+      })
+      .addCase(DeletePosition.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

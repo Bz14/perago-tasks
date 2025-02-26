@@ -86,8 +86,8 @@ class PositionCommandService implements PositionCommandServiceInterface {
           throw new Error(`Can't delete the top hierarchy ${pos.name}`);
         }
       }
-      const position = await this.positionRepository.DeletePositionById(id);
-      return position;
+      const _ = await this.positionRepository.DeletePositionById(id);
+      return pos;
     } catch (error: Error | any) {
       throw new Error(error);
     }

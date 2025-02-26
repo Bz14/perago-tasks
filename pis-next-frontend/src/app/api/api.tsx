@@ -57,12 +57,22 @@ const updatePosition = async (
   }
 };
 
+const deletePositionById = async (id: string) => {
+  try {
+    const response = await axios.delete(`${URL}/position/${id}`);
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(error.response.data.error);
+  }
+};
+
 const positionApi = {
   createPosition,
   getChoices,
   getPositions,
   getPositionById,
   updatePosition,
+  deletePositionById,
 };
 
 export default positionApi;
