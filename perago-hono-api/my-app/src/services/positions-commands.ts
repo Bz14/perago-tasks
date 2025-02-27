@@ -22,7 +22,7 @@ class PositionCommandService implements PositionCommandServiceInterface {
           await this.positionRepository.CheckNullParentPosition();
 
         if (nullCount.length > 0) {
-          throw new Error("Only one parent allowed");
+          throw new Error("Only one top position allowed");
         }
       }
 

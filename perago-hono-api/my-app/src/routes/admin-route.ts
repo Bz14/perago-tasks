@@ -14,8 +14,8 @@ const adminController = new AdminController(
 
 const adminRoute = new Hono({ strict: false });
 
-adminRoute.get("/auth", adminController.GetAdmin);
+adminRoute.post("/auth", adminController.GetAdmin);
 
-adminRoute.post("/auth", adminController.CreateAdmin);
+adminRoute.post("/auth/create", adminController.CreateAdmin);
 
 export default adminRoute;

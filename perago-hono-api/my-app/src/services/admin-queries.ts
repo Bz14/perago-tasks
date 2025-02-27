@@ -9,18 +9,22 @@ class AdminQueryService implements AdminQueryServiceInterface {
     this.adminRepository = repository;
   }
 
-  GetAdmin = async (userName: string, password: string) => {
+  GetAdmin = async (username: string, password: string) => {
     try {
-      const admin: any = await this.adminRepository.GetAdmin(
-        userName,
-        password
-      );
-      const isAdmin = await bcrypt.compare(admin.password, password);
+      const [admin]: any = await this.adminRepository.GetAdmin(username);
+      if (!admin) {
+        throw new Error("Admin not found");
+      }
+
+      const isAdmin = await bcrypt.compare(password, admin.password);
       if (!isAdmin) {
         throw new Error("Invalid username or password");
       }
 
-      return admin;
+      return {
+        id: admin.id,
+        userName: admin.username,
+      };
     } catch (error: Error | any) {
       throw new Error(error.message);
     }

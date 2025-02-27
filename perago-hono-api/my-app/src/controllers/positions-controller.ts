@@ -51,7 +51,7 @@ class PositionController {
       }
       return c.json({ data: position, message: "Position detail fetched" });
     } catch (error: Error | any) {
-      return c.json({ error: error.message });
+      return c.json({ error: error.message }, 500);
     }
   };
 
@@ -64,7 +64,7 @@ class PositionController {
       }
       return c.json({ data: children, message: "Children positions fetched." });
     } catch (error: Error | any) {
-      return c.json({ error: error.message });
+      return c.json({ error: error.message }, 500);
     }
   };
 
@@ -76,7 +76,7 @@ class PositionController {
       }
       return c.json({ data: positions, message: "All positions fetched" });
     } catch (error: Error | any) {
-      return c.json({ error: error.message });
+      return c.json({ error: error.message }, 500);
     }
   };
 
@@ -99,7 +99,7 @@ class PositionController {
         message: "Position updated successfully.",
       });
     } catch (error: Error | any) {
-      return c.json({ error: error.message });
+      return c.json({ error: error.message }, 500);
     }
   };
 
@@ -113,7 +113,7 @@ class PositionController {
       });
     } catch (error: Error | any) {
       console.log(error);
-      return c.json({ error: error.message });
+      return c.json({ error: error.message }, 500);
     }
   };
 
@@ -125,7 +125,7 @@ class PositionController {
       }
       return c.json({ data: positions, message: "Position choices fetched" });
     } catch (error: Error | any) {
-      return c.json({ error: error.message });
+      return c.json({ error: error.message }, 500);
     }
   };
 }

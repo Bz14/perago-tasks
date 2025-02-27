@@ -37,6 +37,8 @@ const PositionDetails = () => {
   const { loading, error, position, message, success } = useSelector(
     (state: RootState) => state.position
   );
+
+  const { isLogged } = useSelector((state: RootState) => state.admin);
   const [isEdit, setIsEdit] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState({
@@ -90,6 +92,10 @@ const PositionDetails = () => {
       router.push("/positions/view");
     }, 2000);
   };
+
+  if (isLogged) {
+    router.push("/admin/login");
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen p-6 text-customBlue bg-white">

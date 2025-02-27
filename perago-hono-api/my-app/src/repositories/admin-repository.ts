@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "../config/db.js";
 import { admin } from "../models/schema.js";
 import type { AdminRepositoryInterface } from "../domain/interfaces/admin-interface.js";
@@ -6,11 +6,8 @@ import type { AdminRepositoryInterface } from "../domain/interfaces/admin-interf
 class AdminRepositories implements AdminRepositoryInterface {
   constructor() {}
 
-  GetAdmin = async (userName: string, password: string) => {
-    return db
-      .select()
-      .from(admin)
-      .where(and(eq(admin.username, userName), eq(admin.password, password)));
+  GetAdmin = async (username: string) => {
+    return db.select().from(admin).where(eq(admin.username, username));
   };
 
   CreateAdmin = async (userName: string, password: string) => {

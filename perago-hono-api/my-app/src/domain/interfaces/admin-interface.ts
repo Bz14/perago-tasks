@@ -1,5 +1,5 @@
 interface AdminRepositoryInterface {
-  GetAdmin: (userName: string, password: string) => {};
+  GetAdmin: (userName: string) => {};
   CreateAdmin: (userName: string, password: string) => {};
 }
 

@@ -26,7 +26,7 @@ class AdminController {
       return c.json(
         {
           data: result,
-          message: "Position created successfully.",
+          message: "Admin created successfully.",
         },
         201
       );
@@ -36,23 +36,18 @@ class AdminController {
     }
   };
   GetAdmin = async (c: Context) => {
-    console.log("here");
     try {
-      const body = await c.req.json();
-      if (!body || !body.userName || !body.password) {
-        throw new Error("Invalid request body");
-      }
-      const { userName, password } = body;
-      console.log("here", userName, password);
-      const user = await this.queryService.GetAdmin(userName, password);
+      const { username, password } = await c.req.json();
+
+      const user = await this.queryService.GetAdmin(username, password);
       if (!user) {
-        throw new Error("User not found");
+        throw new Error("Admin not found");
       }
 
-      return c.json({ data: user, message: "Position detail fetched" });
+      return c.json({ data: user, message: "Admin detail fetched" });
     } catch (error: Error | any) {
-      console.log(error.message);
-      return c.json({ error: error.message });
+      console.log(error);
+      return c.json({ error: error.message }, 500);
     }
   };
 }

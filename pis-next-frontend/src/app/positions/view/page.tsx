@@ -66,9 +66,15 @@ const OrgNodeComponent = ({ node }: { node: OrgNode }) => {
 
 const OrgChart = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { error, loading, positions, message } = useSelector(
+  const { loading, positions, message } = useSelector(
     (state: RootState) => state.position
   );
+  const { isLogged } = useSelector((state: RootState) => state.admin);
+  const route = useRouter();
+
+  if (!isLogged) {
+    route.push("/admin/login");
+  }
 
   useEffect(() => {
     dispatch(GetPositions());

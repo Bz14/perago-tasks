@@ -23,6 +23,8 @@ import {
   resetErrorState,
 } from "@/app/redux/slices/positionSlice";
 
+import { useRouter } from "next/navigation";
+
 type FormData = {
   name: string;
   description: string;
@@ -41,10 +43,13 @@ const schema = yup.object().shape({
 });
 
 const CreatePosition = () => {
+  const route = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { loading, success, error, choices } = useSelector(
     (state: RootState) => state.position
   );
+
+  const { isLogged } = useSelector((state: RootState) => state.admin);
 
   const form = useForm({
     defaultValues: {
@@ -101,6 +106,10 @@ const CreatePosition = () => {
   const onSubmit = async (data: FormData) => {
     dispatch(CreateNewPosition(data));
   };
+
+  if (!isLogged) {
+    route.push("/admin/login");
+  }
 
   return (
     <div className="max-w-4xl mx-auto mt-32 bg-white p-6 rounded-lg shadow-xl flex flex-col md:flex-row gap-6">
