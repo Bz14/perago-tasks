@@ -1,13 +1,11 @@
 import { pgTable, uuid, varchar, text, timestamp } from "drizzle-orm/pg-core";
 
-const positions = pgTable("positions", {
+export const positions = pgTable("positions", {
   id: uuid().primaryKey().defaultRandom(),
   name: varchar({ length: 255 }).notNull(),
   description: text().notNull(),
   createdAt: timestamp().notNull().defaultNow(),
-  parentId: uuid("parent_id").references((): any => positions.id, {
-    onDelete: "cascade",
-  }),
+  parentId: uuid("parent_id").references((): any => positions.id),
 });
 
 export const admin = pgTable("admin", {
@@ -16,5 +14,3 @@ export const admin = pgTable("admin", {
   password: varchar({ length: 255 }).notNull(),
   createdAt: timestamp().notNull().defaultNow(),
 });
-
-export default positions;

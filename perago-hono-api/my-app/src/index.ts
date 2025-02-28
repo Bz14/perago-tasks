@@ -4,6 +4,7 @@ import positionsRoute from "./routes/positions-routes.js";
 import adminRoute from "./routes/admin-route.js";
 import config from "./config/config.js";
 import { cors } from "hono/cors";
+import { HTTPException } from "hono/http-exception";
 
 const app = new Hono();
 
@@ -12,12 +13,15 @@ app.use(cors({ origin: "*" }));
 app.route("/api/v1", positionsRoute);
 app.route("/api/v1", adminRoute);
 
-// app.onError((error, c) => {
-//   return c.json({ message: error.message }, 500);
-// });
+app.onError((error, c) => {
+  if (error instanceof HTTPException) {
+    return c.json({ message: error.message }, error.status);
+  }
+  return c.json({ message: error.message }, 500);
+});
 
 app.notFound((c) => {
-  return c.json({ message: "Page not found" });
+  return c.json({ message: "Page not found" }, 404);
 });
 
 serve({ fetch: app.fetch, port: parseInt(config.PORT || "") }, (info) => {

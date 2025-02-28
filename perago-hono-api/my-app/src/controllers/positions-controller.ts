@@ -4,6 +4,7 @@ import type {
 } from "../domain/interfaces/position-interface.js";
 
 import type { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 class PositionController {
   private commandService: PositionCommandServiceInterface;
@@ -22,23 +23,18 @@ class PositionController {
       const result: any = await this.commandService.CreatePosition(
         name,
         description,
-        parentId != "" ? parentId : null
+        parentId
       );
+
       return c.json(
         {
-          data: {
-            id: result.id,
-            name: result.name,
-            description: result.description,
-            parentId: result.parentId,
-          },
+          data: result,
           message: "Position created successfully.",
         },
         201
       );
     } catch (error: Error | any) {
-      console.log(error.message);
-      return c.json({ error: error.message }, 500);
+      throw new HTTPException(error.status, { message: error.message });
     }
   };
 
@@ -51,7 +47,7 @@ class PositionController {
       }
       return c.json({ data: position, message: "Position detail fetched" });
     } catch (error: Error | any) {
-      return c.json({ error: error.message }, 500);
+      throw new Error(error.message);
     }
   };
 

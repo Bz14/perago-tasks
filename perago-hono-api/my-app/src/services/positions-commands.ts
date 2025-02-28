@@ -1,8 +1,10 @@
 import type {
   PositionRepositoryInterface,
   PositionCommandServiceInterface,
+  Position,
 } from "../domain/interfaces/position-interface.js";
-import Position from "../domain/Entities/position-entity.js";
+
+import { HTTPException } from "hono/http-exception";
 class PositionCommandService implements PositionCommandServiceInterface {
   private positionRepository: PositionRepositoryInterface;
   constructor(repository: PositionRepositoryInterface) {
@@ -11,38 +13,46 @@ class PositionCommandService implements PositionCommandServiceInterface {
 
   CreatePosition = async (
     name: string,
-    description: string | null,
+    description: string,
     parentId: string | null
   ): Promise<Position> => {
     try {
-      const position = new Position(name, description, parentId);
+      if (!name) {
+        throw new HTTPException(400, { message: "Name is required" });
+      }
+      if (!description) {
+        throw new HTTPException(400, { message: "Description is required" });
+      }
 
       if (!parentId) {
-        const nullCount: any =
+        const nullParent =
           await this.positionRepository.CheckNullParentPosition();
 
-        if (nullCount.length > 0) {
-          throw new Error("Only one top position allowed");
+        if (nullParent) {
+          throw new HTTPException(400, {
+            message: "Only one top hierarchy allowed",
+          });
         }
       }
 
       if (parentId) {
         const parent = await this.positionRepository.GetPositionById(parentId);
         if (!parent) {
-          throw new Error("Parent position not found.");
+          throw new HTTPException(400, {
+            message: "Parent position not found",
+          });
         }
       }
 
       const newPosition: any = await this.positionRepository.CreatePosition({
-        id: position.getId(),
-        name: position.getName(),
-        description: position.getDescription(),
-        parentId: position.getParentId(),
+        name,
+        description,
+        parentId,
       });
 
       return newPosition;
     } catch (error: Error | any) {
-      throw new Error(error.message);
+      throw new HTTPException(error.status, { message: error.message });
     }
   };
 
@@ -60,11 +70,12 @@ class PositionCommandService implements PositionCommandServiceInterface {
       if (!description) {
         description = pos.description;
       }
-      const position = this.positionRepository.UpdatePosition(
+      const position = await this.positionRepository.UpdatePosition(
         id,
         name,
         description
       );
+      console.log(position);
       return position;
     } catch (error: Error | any) {
       throw new Error(error);
@@ -73,7 +84,7 @@ class PositionCommandService implements PositionCommandServiceInterface {
 
   DeletePosition = async (id: string) => {
     try {
-      const pos =  await this.positionRepository.GetPositionById(id);
+      const pos = await this.positionRepository.GetPositionById(id);
       if (!pos) {
         throw new Error("Position not found");
       }
@@ -86,7 +97,8 @@ class PositionCommandService implements PositionCommandServiceInterface {
           throw new Error(`Can't delete the top hierarchy ${pos.name}`);
         }
       }
-      const _ = await this.positionRepository.DeletePositionById(id);
+      const d = await this.positionRepository.DeletePositionById(id);
+      console.log(d);
       return pos;
     } catch (error: Error | any) {
       throw new Error(error);
