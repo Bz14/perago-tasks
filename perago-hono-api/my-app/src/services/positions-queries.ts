@@ -1,3 +1,4 @@
+import { HTTPException } from "hono/http-exception";
 import type { PositionRepositoryInterface } from "../domain/interfaces/position-interface.js";
 import type { PositionQueryServiceInterface } from "../domain/interfaces/position-interface.js";
 import buildTree from "../utils/buildTree.js";
@@ -7,14 +8,26 @@ class PositionQueryService implements PositionQueryServiceInterface {
     this.positionRepository = repository;
   }
 
-  GetPositionById = async (id: string) => {
+  GetPositionById = async (
+    id: string
+  ): Promise<{
+    id: string;
+    name: string;
+    description: string;
+    parentId: string;
+    children: string[];
+  }> => {
     try {
-      const position: any = await this.positionRepository.GetPositionById(id);
-      const children: any = await this.positionRepository.GetChildPosition(id);
-      position.children = children;
-      return position;
+      const position = await this.positionRepository.GetPositionById(id);
+      if (!position) {
+        throw new HTTPException(404, { message: "Position not found" });
+      }
+      const children = await this.positionRepository.GetChildPosition(id);
+
+      console.log(position, children);
+      return { ...position, children };
     } catch (error: Error | any) {
-      throw new Error(error.message);
+      throw new HTTPException(error.status, { message: error.message });
     }
   };
 

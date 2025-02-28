@@ -16,7 +16,7 @@ interface PositionRepositoryInterface {
     parentId: string | null;
   }>;
   CheckNullParentPosition: () => Promise<{ id: string }>;
-  GetChildPosition: (id: string) => {};
+  GetChildPosition: (id: string) => Promise<{ id: string }[]>;
   GetAllPositions: () => Promise<
     {
       id: string;
@@ -31,13 +31,23 @@ interface PositionRepositoryInterface {
 }
 
 interface PositionCommandServiceInterface {
-  CreatePosition: (name: string, description: string, parentId: string) => {};
+  CreatePosition: (
+    name: string,
+    description: string,
+    parentId: string
+  ) => Promise<Position>;
   UpdatePosition: (id: string, name: string, description: string) => {};
   DeletePosition: (id: string) => {};
 }
 
 interface PositionQueryServiceInterface {
-  GetPositionById: (id: string) => {};
+  GetPositionById: (id: string) => Promise<{
+    id: string;
+    name: string;
+    description: string;
+    parentId: string | null;
+    children: string[];
+  }>;
   GetChildrenPositions: (id: string) => {};
   GetAllPositions: () => {};
   GetPositionChoices: () => {};

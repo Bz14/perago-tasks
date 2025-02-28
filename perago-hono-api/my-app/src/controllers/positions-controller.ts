@@ -20,7 +20,7 @@ class PositionController {
   CreatePosition = async (c: Context) => {
     try {
       const { name, description, parentId } = await c.req.json();
-      const result: any = await this.commandService.CreatePosition(
+      const result = await this.commandService.CreatePosition(
         name,
         description,
         parentId
@@ -47,7 +47,7 @@ class PositionController {
       }
       return c.json({ data: position, message: "Position detail fetched" });
     } catch (error: Error | any) {
-      throw new Error(error.message);
+      throw new HTTPException(error.status, { message: error.message });
     }
   };
 
