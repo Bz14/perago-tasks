@@ -33,7 +33,7 @@ const Navbar = () => {
             <Button
               component={Link}
               href="/positions/create"
-              className="bg-customBlue text-white hover:bg-gray-400 hover:text-customBlue p-2 rounded-lg"
+              className="bg-customBlue text-white hover:bg-gray-400 p-2 rounded-lg"
             >
               Create Position
             </Button>
@@ -41,7 +41,7 @@ const Navbar = () => {
             <Button
               component={Link}
               href="/admin/login"
-              className="bg-customBlue text-white hover:bg-gray-400 hover:text-customBlue px-4 rounded-lg"
+              className="bg-customBlue text-white hover:bg-gray-400 px-4 rounded-lg"
             >
               Get started
             </Button>
@@ -61,24 +61,40 @@ const Navbar = () => {
             <Link href="/" onClick={close} className="hover:text-blue-600">
               Home
             </Link>
-            <Link
-              href="/positions"
-              onClick={close}
-              className="hover:text-blue-600"
-            >
-              Positions
-            </Link>
+
+            {isLogged && (
+              <Link
+                href="/positions/view"
+                className="hover:text-gray-400"
+                onClick={close}
+              >
+                View
+              </Link>
+            )}
+
             <Link href="/about" onClick={close} className="hover:text-blue-600">
               About
             </Link>
-            <Button
-              component={Link}
-              href="/create"
-              onClick={close}
-              className="bg-blue-600 text-white hover:bg-blue-500"
-            >
-              Create Position
-            </Button>
+
+            {isLogged ? (
+              <Button
+                component={Link}
+                onClick={close}
+                href="/positions/create"
+                className="bg-customBlue text-white hover:bg-gray-400 hover:text-customBlue p-2 rounded-lg"
+              >
+                Create Position
+              </Button>
+            ) : (
+              <Button
+                component={Link}
+                onClick={close}
+                href="/admin/login"
+                className="bg-customBlue text-white hover:bg-gray-400 px-4 rounded-lg"
+              >
+                Get started
+              </Button>
+            )}
           </nav>
         </Drawer>
       </div>

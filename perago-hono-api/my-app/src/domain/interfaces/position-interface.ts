@@ -1,5 +1,11 @@
 interface PositionRepositoryInterface {
-  GetPositionById: (id: string) => {};
+  GetPositionById: (id: string) => Promise<{
+    id: string;
+    name: string;
+    description: string;
+    createdAt: Date;
+    parentId: string | null;
+  }>;
   CreatePosition: (data: {
     id: string | null;
     name: string;

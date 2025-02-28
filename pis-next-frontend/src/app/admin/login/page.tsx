@@ -64,7 +64,7 @@ const LoginPage = () => {
         reset();
         dispatch(resetSuccessState());
         router.push("/positions/create");
-      }, 5000);
+      }, 2000);
     }
   }, [success]);
 

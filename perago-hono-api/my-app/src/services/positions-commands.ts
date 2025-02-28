@@ -73,7 +73,7 @@ class PositionCommandService implements PositionCommandServiceInterface {
 
   DeletePosition = async (id: string) => {
     try {
-      const pos: any = await this.positionRepository.GetPositionById(id);
+      const pos =  await this.positionRepository.GetPositionById(id);
       if (!pos) {
         throw new Error("Position not found");
       }

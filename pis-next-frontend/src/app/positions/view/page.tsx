@@ -47,6 +47,7 @@ const OrgNodeComponent = ({ node }: { node: OrgNode }) => {
           </span>
           <IconPlus
             size={15}
+            className="bg-customBlue text-white rounded-full p-1 cursor-pointer"
             onClick={() => route.push(`/positions/view/${node.id}`)}
           />
         </div>
@@ -72,9 +73,11 @@ const OrgChart = () => {
   const { isLogged } = useSelector((state: RootState) => state.admin);
   const route = useRouter();
 
-  if (!isLogged) {
-    route.push("/admin/login");
-  }
+  useEffect(() => {
+    if (!isLogged) {
+      route.push("/admin/login");
+    }
+  }, [isLogged]);
 
   useEffect(() => {
     dispatch(GetPositions());

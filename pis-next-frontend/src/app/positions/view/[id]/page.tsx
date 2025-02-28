@@ -47,6 +47,12 @@ const PositionDetails = () => {
   });
 
   useEffect(() => {
+    if (!isLogged) {
+      router.push("/admin/login");
+    }
+  }, [isLogged]);
+
+  useEffect(() => {
     if (id) {
       dispatch(GetPositionById(id));
     }
@@ -93,10 +99,6 @@ const PositionDetails = () => {
     }, 2000);
   };
 
-  if (isLogged) {
-    router.push("/admin/login");
-  }
-
   return (
     <div className="flex justify-center items-center min-h-screen p-6 text-customBlue bg-white">
       {!position && !loading && (
@@ -106,7 +108,11 @@ const PositionDetails = () => {
         </div>
       )}
       {position && (
-        <Card shadow="xl" radius="lg" className="bg-white w-full max-w-2xl p-6">
+        <Card
+          shadow="xl"
+          radius="lg"
+          className="bg-white w-full max-w-2xl p-6  border border-customBlue hover:shadow-2xl"
+        >
           {success && <Notification color="green">{message}</Notification>}
           {error && <Notification color="red">{error}</Notification>}
           <div className="flex items-center space-x-4 mt-2">

@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
 import Image from "next/image";
 import * as yup from "yup";
-import img from "../../../../public/images/hierarchy.png";
+import img from "../../../../public/images/img1.jpg";
 import {
   TextInput,
   Select,
@@ -64,6 +64,12 @@ const CreatePosition = () => {
   const { errors, isSubmitting } = formState;
 
   useEffect(() => {
+    if (!isLogged) {
+      route.push("/admin/login");
+    }
+  }, [isLogged]);
+
+  useEffect(() => {
     dispatch(resetSuccessState());
   }, []);
 
@@ -107,18 +113,14 @@ const CreatePosition = () => {
     dispatch(CreateNewPosition(data));
   };
 
-  if (!isLogged) {
-    route.push("/admin/login");
-  }
-
   return (
     <div className="max-w-4xl mx-auto mt-32 bg-white p-6 rounded-lg shadow-xl flex flex-col md:flex-row gap-6">
-      <div className="md:w-1/3 flex justify-center bg-customBlue">
+      <div className="md:w-1/3 flex justify-center bg-customBlue rounded-lg shadow-lg :hover:shadow-2xl">
         <Image
           src={img}
           alt="Hierarchy Structure"
-          className="max-w-full h-auto rounded-lg"
-          width={300}
+          className="max-w-full h-auto"
+          width={500}
           height={100}
         />
       </div>

@@ -6,12 +6,20 @@ import type { PositionRepositoryInterface } from "../domain/interfaces/position-
 class PositionRepositories implements PositionRepositoryInterface {
   constructor() {}
 
-  GetPositionById = async (id: string) => {
+  GetPositionById = async (
+    id: string
+  ): Promise<{
+    id: string;
+    name: string;
+    description: string;
+    createdAt: Date;
+    parentId: string | null;
+  }> => {
     const [position] = await db
       .select()
       .from(positions)
       .where(eq(positions.id, id));
-    return position || null;
+    return position;
   };
 
   CreatePosition = async (data: {
@@ -32,7 +40,15 @@ class PositionRepositories implements PositionRepositoryInterface {
   };
 
   GetAllPositions = async () => {
-    return await db.select().from(positions);
+    return await db
+      .select({
+        id: positions.id,
+        name: positions.name,
+        description: positions.description,
+        createdAt: positions.createdAt,
+        parentId: positions.parentId,
+      })
+      .from(positions);
   };
   UpdatePosition = async (id: string, name: string, description: string) => {
     return await db
