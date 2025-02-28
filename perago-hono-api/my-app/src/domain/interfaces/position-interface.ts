@@ -1,30 +1,14 @@
 interface PositionRepositoryInterface {
-  GetPositionById: (id: string | null) => Promise<{
-    id: string;
-    name: string;
-    description: string;
-    parentId: string | null;
-  }>;
+  GetPositionById: (id: string | null) => Promise<Position>;
   CreatePosition: (data: {
     name: string;
     description: string;
     parentId: string | null;
-  }) => Promise<{
-    id: string;
-    name: string;
-    description: string;
-    parentId: string | null;
-  }>;
+  }) => Promise<Position>;
   CheckNullParentPosition: () => Promise<{ id: string }>;
   GetChildrenPosition: (id: string) => Promise<{ id: string; name: string }[]>;
-  GetAllPositions: () => Promise<
-    {
-      id: string;
-      name: string;
-      description: string;
-      parentId: string | null;
-    }[]
-  >;
+  GetAllPositions: () => Promise<Position[]>;
+
   UpdatePosition: (id: string, name: string, description: string) => {};
   DeletePositionById: (id: string) => {};
   GetPositionsByParentId: (parentId: string) => {};
@@ -49,20 +33,25 @@ interface PositionQueryServiceInterface {
     children: { id: string; name: string }[];
   }>;
   GetChildrenPositions: (id: string) => Promise<{ id: string; name: string }[]>;
-  GetAllPositions: () => {};
+  GetAllPositions: () => Promise<TreeNode[]>;
   GetPositionChoices: () => {};
 }
-
-interface Position {
+export type Position = {
   id: string;
   name: string;
   description: string;
   parentId: string | null;
-}
+};
+
+export type TreeNode = {
+  id: string;
+  name: string;
+  description: string;
+  children: TreeNode[];
+};
 
 export type {
   PositionRepositoryInterface,
   PositionCommandServiceInterface,
   PositionQueryServiceInterface,
-  Position,
 };

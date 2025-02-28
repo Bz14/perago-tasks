@@ -58,14 +58,7 @@ class PositionRepositories implements PositionRepositoryInterface {
       .where(eq(positions.parentId, id));
   };
 
-  GetAllPositions = async (): Promise<
-    {
-      id: string;
-      name: string;
-      description: string;
-      parentId: string | null;
-    }[]
-  > => {
+  GetAllPositions = async (): Promise<Position[]> => {
     const allPositions = await db
       .select({
         id: positions.id,

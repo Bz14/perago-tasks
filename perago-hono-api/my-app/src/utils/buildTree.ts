@@ -1,4 +1,11 @@
-const buildTree = (positions: any[], parentId: string | null = null): any => {
+import type {
+  Position,
+  TreeNode,
+} from "../domain/interfaces/position-interface.js";
+const buildTree = (
+  positions: Position[],
+  parentId: string | null = null
+): TreeNode[] => {
   return positions
     .filter((pos) => pos.parentId == parentId)
     .map((pos) => ({

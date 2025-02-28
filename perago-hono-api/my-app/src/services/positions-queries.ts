@@ -1,6 +1,9 @@
 import { HTTPException } from "hono/http-exception";
-import type { PositionRepositoryInterface } from "../domain/interfaces/position-interface.js";
-import type { PositionQueryServiceInterface } from "../domain/interfaces/position-interface.js";
+import type {
+  PositionRepositoryInterface,
+  PositionQueryServiceInterface,
+  TreeNode,
+} from "../domain/interfaces/position-interface.js";
 import buildTree from "../utils/buildTree.js";
 class PositionQueryService implements PositionQueryServiceInterface {
   private positionRepository: PositionRepositoryInterface;
@@ -50,13 +53,16 @@ class PositionQueryService implements PositionQueryServiceInterface {
     }
   };
 
-  GetAllPositions = async () => {
+  GetAllPositions = async (): Promise<TreeNode[]> => {
     try {
-      const positions: any = await this.positionRepository.GetAllPositions();
+      const positions = await this.positionRepository.GetAllPositions();
+      if (positions.length === 0) {
+        throw new HTTPException(404, { message: "No positions found" });
+      }
       const tree = buildTree(positions, null);
       return tree;
     } catch (error: Error | any) {
-      throw new error(error);
+      throw new HTTPException(error.status, { message: error.message });
     }
   };
 
