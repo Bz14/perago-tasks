@@ -10,7 +10,7 @@ interface PositionRepositoryInterface {
   GetAllPositions: () => Promise<Position[]>;
 
   UpdatePosition: (id: string, name: string, description: string) => {};
-  DeletePositionById: (id: string) => {};
+  DeletePositionById: (id: string) => Promise<{ rowCount: number | null }>;
   GetPositionsByParentId: (parentId: string) => {};
 }
 
@@ -21,7 +21,7 @@ interface PositionCommandServiceInterface {
     parentId: string
   ) => Promise<Position>;
   UpdatePosition: (id: string, name: string, description: string) => {};
-  DeletePosition: (id: string) => {};
+  DeletePosition: (id: string) => Promise<Position>;
 }
 
 interface PositionQueryServiceInterface {

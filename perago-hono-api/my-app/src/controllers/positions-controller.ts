@@ -102,8 +102,7 @@ class PositionController {
         message: "Position deleted successfully",
       });
     } catch (error: Error | any) {
-      console.log(error);
-      return c.json({ error: error.message }, 500);
+      throw new HTTPException(error.status, { message: error.message });
     }
   };
 

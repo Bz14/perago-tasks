@@ -1,3 +1,4 @@
+import { uuid } from "drizzle-orm/pg-core";
 import type {
   PositionRepositoryInterface,
   PositionCommandServiceInterface,
@@ -82,26 +83,22 @@ class PositionCommandService implements PositionCommandServiceInterface {
     }
   };
 
-  DeletePosition = async (id: string) => {
+  DeletePosition = async (id: string): Promise<Position> => {
     try {
       const pos = await this.positionRepository.GetPositionById(id);
       if (!pos) {
-        throw new Error("Position not found");
+        throw new HTTPException(404, { message: "Position not found" });
       }
-      console.log(pos);
-
-      if (pos.parentId == null) {
-        const children: any =
-          await this.positionRepository.GetPositionsByParentId(pos.id);
-        if (children.length > 0) {
-          throw new Error(`Can't delete the top hierarchy ${pos.name}`);
-        }
+      const children = await this.positionRepository.GetChildrenPosition(id);
+      if (children.length > 0) {
+        throw new HTTPException(400, {
+          message: "Position has children. Delete children first",
+        });
       }
-      const d = await this.positionRepository.DeletePositionById(id);
-      console.log(d);
+      const _ = await this.positionRepository.DeletePositionById(id);
       return pos;
     } catch (error: Error | any) {
-      throw new Error(error);
+      throw new HTTPException(error.status, { message: error.message });
     }
   };
 }
