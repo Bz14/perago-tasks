@@ -55,12 +55,9 @@ class PositionController {
     try {
       const id = c.req.param("id");
       const children: any = await this.queryService.GetChildrenPositions(id);
-      if (children.length == 0) {
-        return c.json({ data: null, message: "No children positions found" });
-      }
       return c.json({ data: children, message: "Children positions fetched." });
     } catch (error: Error | any) {
-      return c.json({ error: error.message }, 500);
+      throw new HTTPException(error.status, { message: error.message });
     }
   };
 

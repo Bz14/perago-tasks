@@ -49,7 +49,9 @@ class PositionRepositories implements PositionRepositoryInterface {
     return position;
   };
 
-  GetChildPosition = async (id: string): Promise<{ id: string }[]> => {
+  GetChildrenPosition = async (
+    id: string
+  ): Promise<{ id: string; name: string }[]> => {
     return await db
       .select({ id: positions.id, name: positions.name })
       .from(positions)

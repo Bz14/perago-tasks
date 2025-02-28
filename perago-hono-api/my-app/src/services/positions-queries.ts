@@ -14,34 +14,39 @@ class PositionQueryService implements PositionQueryServiceInterface {
     id: string;
     name: string;
     description: string;
-    parentId: string;
-    children: string[];
+    parentId: string | null;
+    children: { id: string; name: string }[];
   }> => {
     try {
       const position = await this.positionRepository.GetPositionById(id);
       if (!position) {
         throw new HTTPException(404, { message: "Position not found" });
       }
-      const children = await this.positionRepository.GetChildPosition(id);
-
-      console.log(position, children);
-      return { ...position, children };
+      const children = await this.positionRepository.GetChildrenPosition(id);
+      return {
+        ...position,
+        children: children,
+      };
     } catch (error: Error | any) {
       throw new HTTPException(error.status, { message: error.message });
     }
   };
 
-  GetChildrenPositions = async (id: string) => {
+  GetChildrenPositions = async (
+    id: string
+  ): Promise<{ id: string; name: string }[]> => {
     try {
       const position = await this.positionRepository.GetPositionById(id);
       if (!position) {
-        throw new Error("Position not found");
+        throw new HTTPException(400, { message: "Position not found" });
       }
-
-      const children = this.positionRepository.GetChildPosition(id);
+      const children = await this.positionRepository.GetChildrenPosition(id);
+      if (children.length === 0) {
+        throw new HTTPException(400, { message: "Position has no children" });
+      }
       return children;
     } catch (error: Error | any) {
-      throw new Error(error);
+      throw new HTTPException(error.status, { message: error.message });
     }
   };
 
