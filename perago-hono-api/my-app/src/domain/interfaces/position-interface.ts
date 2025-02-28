@@ -1,3 +1,5 @@
+import type { Context } from "hono";
+
 interface PositionRepositoryInterface {
   GetPositionById: (id: string | null) => Promise<Position>;
   CreatePosition: (data: {
@@ -9,7 +11,17 @@ interface PositionRepositoryInterface {
   GetChildrenPosition: (id: string) => Promise<{ id: string; name: string }[]>;
   GetAllPositions: () => Promise<Position[]>;
 
-  UpdatePosition: (id: string, name: string, description: string) => {};
+  UpdatePosition: (
+    id: string,
+    name: string,
+    description: string,
+    parentId: string | null
+  ) => Promise<{
+    id: string;
+    name: string;
+    description: string;
+    parentId: string | null;
+  }>;
   DeletePositionById: (id: string) => Promise<{ rowCount: number | null }>;
   GetPositionsByParentId: (parentId: string) => {};
 }
@@ -20,7 +32,12 @@ interface PositionCommandServiceInterface {
     description: string,
     parentId: string
   ) => Promise<Position>;
-  UpdatePosition: (id: string, name: string, description: string) => {};
+  UpdatePosition: (
+    id: string,
+    name: string,
+    description: string,
+    parentId: string | null
+  ) => Promise<Position>;
   DeletePosition: (id: string) => Promise<Position>;
 }
 
@@ -36,6 +53,17 @@ interface PositionQueryServiceInterface {
   GetAllPositions: () => Promise<TreeNode[]>;
   GetPositionChoices: () => {};
 }
+
+interface PositionControllerInterface {
+  CreatePosition: (c: Context) => Promise<Response>;
+  UpdatePosition: (c: Context) => Promise<Response>;
+  DeletePosition: (c: Context) => Promise<Response>;
+  GetPositionById: (c: Context) => Promise<Response>;
+  GetPositionChildren: (c: Context) => Promise<Response>;
+  GetAllPositions: (c: Context) => Promise<Response>;
+  GetPositionChoices: (c: Context) => Promise<Response>;
+}
+
 export type Position = {
   id: string;
   name: string;
@@ -54,4 +82,5 @@ export type {
   PositionRepositoryInterface,
   PositionCommandServiceInterface,
   PositionQueryServiceInterface,
+  PositionControllerInterface,
 };

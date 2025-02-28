@@ -1,55 +1,48 @@
-import type {
-  AdminCommandServiceInterface,
-  AdminQueryServiceInterface,
-} from "../domain/interfaces/admin-interface.js";
 import type { Context } from "hono";
+import type { AdminControllerInterface } from "../domain/interfaces/admin-interface.js";
+import adminCommandService from "../services/admin-command.js";
+import adminQueryService from "../services/admin-queries.js";
 
-class AdminController {
-  private commandService: AdminCommandServiceInterface;
-  private queryService: AdminQueryServiceInterface;
-  constructor(
-    commandService: AdminCommandServiceInterface,
-    queryService: AdminQueryServiceInterface
-  ) {
-    this.commandService = commandService;
-    this.queryService = queryService;
+const CreateAdmin = async (c: Context): Promise<Response> => {
+  try {
+    const { userName, password } = await c.req.json();
+    const result: any = await adminCommandService.CreateAdmin(
+      userName,
+      password
+    );
+
+    return c.json(
+      {
+        data: result,
+        message: "Admin created successfully.",
+      },
+      201
+    );
+  } catch (error: Error | any) {
+    console.log(error.message);
+    return c.json({ error: error.message }, 500);
   }
+};
 
-  CreateAdmin = async (c: Context) => {
-    try {
-      const { userName, password } = await c.req.json();
-      const result: any = await this.commandService.CreateAdmin(
-        userName,
-        password
-      );
+const GetAdmin = async (c: Context): Promise<Response> => {
+  try {
+    const { username, password } = await c.req.json();
 
-      return c.json(
-        {
-          data: result,
-          message: "Admin created successfully.",
-        },
-        201
-      );
-    } catch (error: Error | any) {
-      console.log(error.message);
-      return c.json({ error: error.message }, 500);
+    const user = await adminQueryService.GetAdmin(username, password);
+    if (!user) {
+      throw new Error("Admin not found");
     }
-  };
-  GetAdmin = async (c: Context) => {
-    try {
-      const { username, password } = await c.req.json();
 
-      const user = await this.queryService.GetAdmin(username, password);
-      if (!user) {
-        throw new Error("Admin not found");
-      }
+    return c.json({ data: user, message: "Admin detail fetched" });
+  } catch (error: Error | any) {
+    console.log(error);
+    return c.json({ error: error.message }, 500);
+  }
+};
 
-      return c.json({ data: user, message: "Admin detail fetched" });
-    } catch (error: Error | any) {
-      console.log(error);
-      return c.json({ error: error.message }, 500);
-    }
-  };
-}
+const adminController: AdminControllerInterface = {
+  CreateAdmin,
+  GetAdmin,
+};
 
-export default AdminController;
+export default adminController;
