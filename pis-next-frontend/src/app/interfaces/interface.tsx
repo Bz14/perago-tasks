@@ -4,3 +4,16 @@ export interface Position {
   description: string;
   parentId: string | null;
 }
+
+export type FormData = {
+  name: string;
+  description: string;
+  parentPosition: string;
+};
+
+export type OrganizationNode = {
+  id: string;
+  name: string;
+  description: string;
+  children?: OrganizationNode[];
+};

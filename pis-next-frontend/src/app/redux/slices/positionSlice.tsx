@@ -15,15 +15,8 @@ export const positionApi = createApi({
         body: data,
       }),
 
-      onQueryStarted: async (_, { queryFulfilled }) => {
-        try {
-          const { data } = await queryFulfilled;
-          return data;
-        } catch (error) {
-          console.log(error);
-          return error;
-        }
-      },
+      transformResponse: (response: { data: Position; message: string }) =>
+        response.data,
 
       invalidatesTags: ["Choices"],
     }),
@@ -31,29 +24,22 @@ export const positionApi = createApi({
     getPositions: build.query({
       query: () => "/positions",
 
-      onQueryStarted: async (_, { queryFulfilled }) => {
-        try {
-          const { data } = await queryFulfilled;
-          return data;
-        } catch (error) {
-          console.log(error);
-          return error;
-        }
-      },
+      transformResponse: (response: { data: Position[]; message: string }) =>
+        response.data,
     }),
 
     getPositionById: build.query({
       query: (id) => `/position/${id}`,
 
-      onQueryStarted: async (_, { queryFulfilled }) => {
-        try {
-          const { data } = await queryFulfilled;
-          return data;
-        } catch (error) {
-          console.log(error);
-          return error;
-        }
-      },
+      transformResponse: (response: {
+        data: {
+          name: string;
+          description: string;
+          parentId: string;
+          children: { id: string; name: string }[];
+        };
+        message: string;
+      }) => response.data,
     }),
 
     updatePosition: build.mutation({
@@ -62,16 +48,8 @@ export const positionApi = createApi({
         method: "PUT",
         body: { name, description },
       }),
-
-      onQueryStarted: async (_, { queryFulfilled }) => {
-        try {
-          const { data } = await queryFulfilled;
-          return data;
-        } catch (error) {
-          console.log(error);
-          return error;
-        }
-      },
+      transformResponse: (response: { data: Position; message: string }) =>
+        response.data,
     }),
 
     deletePosition: build.mutation({
@@ -101,17 +79,11 @@ export const positionApi = createApi({
     }),
 
     getChoices: build.query({
-      query: () => "/choices",
-
-      onQueryStarted: async (_, { queryFulfilled }) => {
-        try {
-          const { data } = await queryFulfilled;
-          return data;
-        } catch (error) {
-          console.log(error);
-          return error;
-        }
-      },
+      query: () => "/position/choices",
+      transformResponse: (response: {
+        data: { value: string; label: string }[];
+        message: string;
+      }) => response.data,
 
       providesTags: ["Choices"],
     }),

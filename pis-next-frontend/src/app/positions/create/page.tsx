@@ -2,7 +2,6 @@
 
 import { useForm, FieldErrors } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect } from "react";
 import Image from "next/image";
 import * as yup from "yup";
 import img from "../../../../public/images/img1.jpg";
@@ -14,22 +13,12 @@ import {
   Loader,
   Textarea,
 } from "@mantine/core";
-import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch, RootState } from "@/app/redux/store/store";
 import {
-  CreateNewPosition,
-  GetChoices,
-  resetSuccessState,
-  resetErrorState,
+  useCreatePositionMutation,
+  useGetChoicesQuery,
 } from "@/app/redux/slices/positionSlice";
 
-import { useRouter } from "next/navigation";
-
-type FormData = {
-  name: string;
-  description: string;
-  parentPosition: string;
-};
+import { FormData } from "@/app/interfaces/interface";
 
 const schema = yup.object().shape({
   name: yup
@@ -43,13 +32,10 @@ const schema = yup.object().shape({
 });
 
 const CreatePosition = () => {
-  const route = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
-  const { loading, success, error, choices } = useSelector(
-    (state: RootState) => state.position
-  );
+  const [createPosition, { isSuccess, isLoading, error }] =
+    useCreatePositionMutation();
 
-  const { isLogged } = useSelector((state: RootState) => state.admin);
+  const { data: choices } = useGetChoicesQuery(undefined);
 
   const form = useForm({
     defaultValues: {
@@ -63,54 +49,14 @@ const CreatePosition = () => {
   const { register, handleSubmit, formState, reset, setValue } = form;
   const { errors, isSubmitting } = formState;
 
-  useEffect(() => {
-    if (!isLogged) {
-      route.push("/admin/login");
-    }
-  }, [isLogged]);
-
-  useEffect(() => {
-    dispatch(resetSuccessState());
-  }, []);
-
-  useEffect(() => {
-    dispatch(GetChoices());
-  }, []);
-
   const onError = (errors: FieldErrors) => {
     reset();
     console.log(errors);
   };
 
-  useEffect(() => {
-    if (success) {
-      setTimeout(() => {
-        reset();
-        dispatch(resetSuccessState());
-      }, 1000);
-    }
-  }, [success]);
-
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        reset();
-        dispatch(resetErrorState());
-      }, 7000);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        reset();
-        dispatch(resetErrorState());
-      }, 1000);
-    }
-  }, [error]);
-
   const onSubmit = async (data: FormData) => {
-    dispatch(CreateNewPosition(data));
+    console.log(data);
+    createPosition(data);
   };
 
   return (
@@ -130,12 +76,16 @@ const CreatePosition = () => {
           Create New Position
         </h2>
 
-        {success && (
+        {isSuccess && (
           <Notification color="green">
             Position created successfully!
           </Notification>
         )}
-        {error && <Notification color="red">{error}</Notification>}
+        {error && (
+          <Notification color="red">
+            {error && error.data ? error.data.message : "An error occurred"}
+          </Notification>
+        )}
 
         <form
           onSubmit={handleSubmit(onSubmit, onError)}
@@ -175,7 +125,7 @@ const CreatePosition = () => {
             <Select
               label="Parent Position"
               placeholder="Select parent position"
-              data={choices.length > 0 ? choices : []}
+              data={choices && choices.length > 0 ? choices : []}
               {...register("parentId")}
               error={errors.parentId?.message}
               onChange={(value) => setValue("parentId", value)}
@@ -193,7 +143,7 @@ const CreatePosition = () => {
             fullWidth
             className="bg-customBlue hover:bg-gray-500 text-white"
           >
-            {loading && isSubmitting ? (
+            {isLoading && isSubmitting ? (
               <Loader color="white" size="sm" />
             ) : (
               "Create Position"

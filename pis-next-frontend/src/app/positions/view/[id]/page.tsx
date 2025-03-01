@@ -19,26 +19,25 @@ import {
   IconAlertCircle,
 } from "@tabler/icons-react";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, AppDispatch } from "@/app/redux/store/store";
+import { useState } from "react";
 import {
-  GetPositionById,
-  UpdatePosition,
-  DeletePosition,
-  resetErrorState,
-  resetSuccessState,
+  useUpdatePositionMutation,
+  useDeletePositionMutation,
+  useGetPositionByIdQuery,
 } from "@/app/redux/slices/positionSlice";
 
 const PositionDetails = () => {
-  const router = useRouter();
   const { id } = useParams();
-  const dispatch = useDispatch<AppDispatch>();
-  const { loading, error, position, message, success } = useSelector(
-    (state: RootState) => state.position
-  );
+  const {
+    data: position,
+    error,
+    isLoading,
+    isSuccess,
+  } = useGetPositionByIdQuery(id);
+  const [UpdatePosition] = useUpdatePositionMutation();
+  const [DeletePosition] = useDeletePositionMutation();
 
-  const { isLogged } = useSelector((state: RootState) => state.admin);
+  const router = useRouter();
   const [isEdit, setIsEdit] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState({
@@ -46,65 +45,23 @@ const PositionDetails = () => {
     description: "",
   });
 
-  useEffect(() => {
-    if (!isLogged) {
-      router.push("/admin/login");
-    }
-  }, [isLogged]);
-
-  useEffect(() => {
-    if (id) {
-      dispatch(GetPositionById(id));
-    }
-  }, [id]);
-
-  useEffect(() => {
-    if (success) {
-      setTimeout(() => {
-        dispatch(resetSuccessState());
-      }, 1000);
-    }
-  }, [success]);
-
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        dispatch(resetErrorState());
-      }, 7000);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (position) {
-      setData({
-        name: position.name || "",
-        description: position.description || "",
-      });
-    }
-  }, [position]);
-
   const handleSave = () => {
-    dispatch(
-      UpdatePosition({ id: id, name: data.name, description: data.description })
-    );
+    UpdatePosition({ id: id, name: data.name, description: data.description });
     setIsEdit(false);
   };
 
   const handleDelete = () => {
-    dispatch(DeletePosition(id));
+    DeletePosition(id);
     setShowModal(false);
-
-    setTimeout(() => {
-      router.push("/positions/view");
-    }, 2000);
+    router.push("/positions/view");
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen p-6 text-customBlue bg-white">
-      {!position && !loading && (
+      {!position && !isLoading && (
         <div className="flex flex-col items-center align-middle mt-10">
           <IconAlertCircle size={40} className="text-customBlue" />
-          <h1 className="text-customBlue">{message}</h1>
+          <h1 className="text-customBlue">Position not found</h1>
         </div>
       )}
       {position && (
@@ -113,8 +70,12 @@ const PositionDetails = () => {
           radius="lg"
           className="bg-white w-full max-w-2xl p-6  border border-customBlue hover:shadow-2xl"
         >
-          {success && <Notification color="green">{message}</Notification>}
-          {error && <Notification color="red">{error}</Notification>}
+          {isSuccess && (
+            <Notification color="green">Some message here</Notification>
+          )}
+          {error && (
+            <Notification color="red">{JSON.stringify(error)}</Notification>
+          )}
           <div className="flex items-center space-x-4 mt-2">
             <Avatar
               size={60}

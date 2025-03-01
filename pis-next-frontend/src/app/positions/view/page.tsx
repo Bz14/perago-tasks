@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   IconAlertCircle,
   IconChevronDown,
@@ -8,19 +8,11 @@ import {
   IconPlus,
 } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/app/redux/store/store";
-import { GetPositions } from "@/app/redux/slices/positionSlice";
 import { Loader } from "@mantine/core";
+import { OrganizationNode } from "@/app/interfaces/interface";
+import { useGetPositionsQuery } from "@/app/redux/slices/positionSlice";
 
-type OrgNode = {
-  id: string;
-  name: string;
-  description: string;
-  children?: OrgNode[];
-};
-
-const OrgNodeComponent = ({ node }: { node: OrgNode }) => {
+const OrgNodeComponent = ({ node }: { node: OrganizationNode }) => {
   const route = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const hasChildren = node.children && node.children.length > 0;
@@ -66,23 +58,7 @@ const OrgNodeComponent = ({ node }: { node: OrgNode }) => {
 };
 
 const OrgChart = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { loading, positions, message } = useSelector(
-    (state: RootState) => state.position
-  );
-  const { isLogged } = useSelector((state: RootState) => state.admin);
-  const route = useRouter();
-
-  useEffect(() => {
-    if (!isLogged) {
-      route.push("/admin/login");
-    }
-  }, [isLogged]);
-
-  useEffect(() => {
-    dispatch(GetPositions());
-  }, []);
-
+  const { data: positions, isLoading, error } = useGetPositionsQuery(undefined);
   return (
     <div className="min-h-screen">
       <div className="md:max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg mt-28">
@@ -90,18 +66,22 @@ const OrgChart = () => {
           Organization Chart
         </h2>
         <div className="mt-2">
-          {loading && <Loader />}
-          {!positions && !loading && (
+          {isLoading && (
+            <div className="flex flex-row justify-center items-center mt-10">
+              <Loader />
+            </div>
+          )}
+          {!positions && !isLoading && (
             <div
               className="flex flex-col items-center align-middle mt-10
           "
             >
               <IconAlertCircle size={40} className="text-customBlue" />
-              <h1 className="text-customBlue">{message}</h1>
+              <h1 className="text-customBlue">Positions not found</h1>
             </div>
           )}
           {positions &&
-            positions.map((position: OrgNode, index: number) => (
+            positions.map((position: OrganizationNode, index: number) => (
               <OrgNodeComponent key={index} node={position} />
             ))}
         </div>
