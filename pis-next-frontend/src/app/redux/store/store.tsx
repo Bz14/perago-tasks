@@ -1,12 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
-import positionSlice from "@/app/redux/slices/positionSlice";
+import { positionApi } from "@/app/redux/slices/positionSlice";
 import adminSlice from "@/app/redux/slices/adminSlice";
 
 const store = configureStore({
   reducer: {
-    position: positionSlice,
+    [positionApi.reducerPath]: positionApi.reducer,
     admin: adminSlice,
   },
+
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(positionApi.middleware),
 });
 
 export default store;
