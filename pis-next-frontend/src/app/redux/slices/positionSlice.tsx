@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Position } from "@/app/interfaces/interface";
+import { Position, OrganizationNode } from "@/app/interfaces/interface";
 
 const URL = process.env.API_URL || "http://localhost:5000/api/v1";
 
@@ -24,8 +24,10 @@ export const positionApi = createApi({
     getPositions: build.query({
       query: () => "/positions",
 
-      transformResponse: (response: { data: Position[]; message: string }) =>
-        response.data,
+      transformResponse: (response: {
+        data: OrganizationNode[];
+        message: string;
+      }) => response.data,
     }),
 
     getPositionById: build.query({

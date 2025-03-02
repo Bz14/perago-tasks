@@ -17,3 +17,9 @@ export type OrganizationNode = {
   description: string;
   children?: OrganizationNode[];
 };
+
+export type TreeNode = {
+  value: string;
+  label: string;
+  children?: TreeNode[];
+};

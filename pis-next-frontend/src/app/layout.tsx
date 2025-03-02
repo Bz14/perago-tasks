@@ -21,7 +21,7 @@ export default function RootLayout({
       <head>
         <ColorSchemeScript />
       </head>
-      <body>
+      <body className="flex flex-col min-h-screen">
         <Providers>
           <MantineProvider>
             <Navbar />
