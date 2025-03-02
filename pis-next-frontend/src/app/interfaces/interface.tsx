@@ -18,6 +18,17 @@ export type OrganizationNode = {
   children?: OrganizationNode[];
 };
 
+export type PositionNode = {
+  id: string;
+  name: string;
+  description: string;
+  parentId: string | null;
+  children: {
+    id: string;
+    name: string;
+  }[];
+};
+
 export type TreeNode = {
   value: string;
   label: string;

@@ -56,7 +56,7 @@ const CreatePosition = () => {
 
   const onSubmit = async (data: FormData) => {
     console.log(data);
-    createPosition(data);
+    await createPosition(data);
   };
 
   return (

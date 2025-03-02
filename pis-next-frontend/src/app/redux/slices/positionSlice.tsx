@@ -6,7 +6,7 @@ const URL = process.env.API_URL || "http://localhost:5000/api/v1";
 export const positionApi = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({ baseUrl: URL }),
-  tagTypes: ["Choices"],
+  tagTypes: ["Choices", "Position"],
   endpoints: (build) => ({
     createPosition: build.mutation({
       query: (data) => ({
@@ -14,11 +14,10 @@ export const positionApi = createApi({
         method: "POST",
         body: data,
       }),
-
       transformResponse: (response: { data: Position; message: string }) =>
         response.data,
 
-      invalidatesTags: ["Choices"],
+      invalidatesTags: ["Choices", "Position"],
     }),
 
     getPositions: build.query({
@@ -28,6 +27,8 @@ export const positionApi = createApi({
         data: OrganizationNode[];
         message: string;
       }) => response.data,
+
+      providesTags: ["Position"],
     }),
 
     getPositionById: build.query({
@@ -42,6 +43,8 @@ export const positionApi = createApi({
         };
         message: string;
       }) => response.data,
+
+      providesTags: ["Position"],
     }),
 
     updatePosition: build.mutation({
@@ -52,6 +55,7 @@ export const positionApi = createApi({
       }),
       transformResponse: (response: { data: Position; message: string }) =>
         response.data,
+      invalidatesTags: ["Choices", "Position"],
     }),
 
     deletePosition: build.mutation({
@@ -60,24 +64,9 @@ export const positionApi = createApi({
         method: "DELETE",
       }),
 
-      onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
-        const result = dispatch(
-          positionApi.util.updateQueryData(
-            "getPositions",
-            undefined,
-            (draft) => {
-              return draft.filter((p: Position) => p.id !== id);
-            }
-          )
-        );
-
-        try {
-          await queryFulfilled;
-        } catch (error) {
-          console.log(error);
-          result.undo();
-        }
-      },
+      transformResponse: (response: { data: Position; message: string }) =>
+        response.data,
+      invalidatesTags: ["Choices", "Position"],
     }),
 
     getChoices: build.query({
