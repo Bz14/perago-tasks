@@ -25,7 +25,7 @@ export default function RootLayout({
         <Providers>
           <MantineProvider>
             <Navbar />
-            {children}
+            <div className="flex-grow">{children}</div>
             <Footer />
           </MantineProvider>
         </Providers>

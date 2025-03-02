@@ -4,7 +4,7 @@ import { IconArrowRight } from "@tabler/icons-react";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-customBlue text-white">
+    <div className="relative min-h-screen flex items-center justify-center bg-customBlue text-white mb-10">
       <div
         className="absolute inset-0 bg-cover bg-center opacity-30 z-0"
         style={{

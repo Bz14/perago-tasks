@@ -11,6 +11,7 @@ import {
   Modal,
   Container,
   Loader,
+  Select,
 } from "@mantine/core";
 import {
   IconEdit,
@@ -23,6 +24,7 @@ import { useDisclosure } from "@mantine/hooks";
 import {
   useUpdatePositionMutation,
   useDeletePositionMutation,
+  useGetChoicesQuery,
 } from "@/app/redux/slices/positionSlice";
 
 interface PositionDetailProps {
@@ -36,19 +38,27 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
     useDeletePositionMutation();
 
   const [isEdit, setIsEdit] = useState(false);
-  const [data, setData] = useState({ name: "", description: "" });
+  const { data: choices } = useGetChoicesQuery(undefined, {
+    skip: !isEdit,
+  });
+  const [data, setData] = useState({ name: "", description: "", parentId: "" });
 
   const [modalOpened, { open: openModal, close: closeModal }] =
     useDisclosure(false);
 
   useEffect(() => {
     if (position) {
-      setData({ name: position.name, description: position.description });
+      setData({
+        name: position.name,
+        description: position.description,
+        parentId: position.parentId ?? "",
+      });
     }
   }, [position]);
 
   const handleSave = async () => {
     if (!position) return;
+    console.log(data);
     await updatePosition({ id: position.id, ...data });
     setIsEdit(false);
   };
@@ -60,12 +70,7 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
   };
 
   if (!position) {
-    return (
-      <Container className="w-1/3 text-customBlue bg-white mt-28 flex flex-col items-center">
-        <IconAlertCircle size={40} className="text-customBlue" />
-        <h1 className="text-customBlue">Position not found</h1>
-      </Container>
-    );
+    return <></>;
   }
 
   return (
@@ -110,6 +115,25 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
             />
           ) : (
             <Text className="text-customBlue">{position.description}</Text>
+          )}
+
+          {isEdit && (
+            <div className="mt-2">
+              <Select
+                label="Parent Position"
+                placeholder="Select parent position"
+                data={choices && choices.length > 0 ? choices : []}
+                onChange={(value) =>
+                  setData({ ...data, parentId: value ?? "" })
+                }
+                classNames={{
+                  input:
+                    "border-gray-300 p-3 rounded-lg focus:ring-customBlue w-full outline-none",
+                  label: "text-gray-800",
+                  error: "ml-2 text-red-500",
+                }}
+              />
+            </div>
           )}
 
           {position.children?.length > 0 && (

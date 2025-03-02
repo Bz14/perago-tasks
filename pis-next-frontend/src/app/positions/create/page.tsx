@@ -57,40 +57,37 @@ const CreatePosition = () => {
   const onSubmit = async (data: FormData) => {
     console.log(data);
     await createPosition(data);
+    reset();
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-32 bg-white p-6 rounded-lg shadow-xl flex flex-col md:flex-row gap-6">
-      <div className="md:w-1/3 flex justify-center bg-customBlue rounded-lg shadow-lg :hover:shadow-2xl">
+    <div className="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-xl flex flex-col md:flex-row gap-8 mt-28">
+      <div className="h-96 flex justify-center md:w-1/2 bg-customBlue rounded-lg shadow-lg mt-2">
         <Image
           src={img}
           alt="Hierarchy Structure"
-          className="max-w-full h-auto"
+          className="w-full h-auto rounded-lg"
           width={500}
-          height={100}
+          height={300}
         />
       </div>
-
-      <div className="md:w-2/3">
-        <h2 className="text-2xl font-bold text-center text-customBlue">
+      <div className="md:w-1/2 flex flex-col justify-start gap-6">
+        <h2 className="text-xl font-bold text-center text-customBlue">
           Create New Position
         </h2>
 
         {isSuccess && (
-          <Notification color="green">
+          <Notification color="green" radius="md" className="mb-4">
             Position created successfully!
           </Notification>
         )}
         {error && (
-          <Notification color="red">
+          <Notification color="red" radius="md">
             {error && error.data ? error.data.message : "An error occurred"}
           </Notification>
         )}
 
-        <form
-          onSubmit={handleSubmit(onSubmit, onError)}
-          className="space-y-4 mt-6 p-4"
-        >
+        <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
           <div>
             <TextInput
               label="Position Title"
@@ -98,10 +95,9 @@ const CreatePosition = () => {
               {...register("name")}
               error={errors.name?.message}
               classNames={{
-                input:
-                  "p-2 focus:ring-customBlue rounded-lg mt-1 text-gray-500",
+                input: "p-3 border-gray-300 rounded-lg focus:ring-customBlue",
                 label: "text-gray-800",
-                error: "ml-2",
+                error: "ml-2 text-red-500",
               }}
             />
           </div>
@@ -114,9 +110,9 @@ const CreatePosition = () => {
               error={errors.description?.message}
               classNames={{
                 input:
-                  "border-gray-300 p-2 focus:ring-customBlue rounded-lg w-full mt-1 outline-none text-gray-500",
+                  "border-gray-300 p-3 rounded-lg focus:ring-customBlue w-full outline-none",
                 label: "text-gray-800",
-                error: "ml-2",
+                error: "ml-2 text-red-500",
               }}
             />
           </div>
@@ -131,9 +127,9 @@ const CreatePosition = () => {
               onChange={(value) => setValue("parentId", value)}
               classNames={{
                 input:
-                  "border-gray-300 p-2 focus:ring-customBlue rounded-lg w-full mt-1 outline-none text-gray-500",
+                  "border-gray-300 p-3 rounded-lg focus:ring-customBlue w-full outline-none",
                 label: "text-gray-800",
-                error: "ml-2",
+                error: "ml-2 text-red-500",
               }}
             />
           </div>
@@ -141,7 +137,7 @@ const CreatePosition = () => {
           <Button
             type="submit"
             fullWidth
-            className="bg-customBlue hover:bg-gray-500 text-white"
+            className="bg-customBlue hover:bg-gray-500 text-white mt-4"
           >
             {isLoading && isSubmitting ? (
               <Loader color="white" size="sm" />

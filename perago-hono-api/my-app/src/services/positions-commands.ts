@@ -38,10 +38,10 @@ const CreatePosition = async (
       }
     }
 
-    const newPosition: any = await positionRepository.CreatePosition({
+    const newPosition: Position = await positionRepository.CreatePosition({
       name,
       description,
-      parentId,
+      parentId: parentId === "" ? null : parentId,
     });
 
     return newPosition;
