@@ -1,7 +1,9 @@
 import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 import type { Metadata } from "next";
 import "./globals.css";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import Navbar from "./components/nav";
 import Footer from "./components/footer";
 import Providers from "./redux/provider";
@@ -24,8 +26,12 @@ export default function RootLayout({
       <body className="flex flex-col min-h-screen">
         <Providers>
           <MantineProvider>
+            <Notifications />
             <Navbar />
-            <div className="flex-grow">{children}</div>
+            <div className="flex-grow">
+              <Notifications />
+              {children}
+            </div>
             <Footer />
           </MantineProvider>
         </Providers>

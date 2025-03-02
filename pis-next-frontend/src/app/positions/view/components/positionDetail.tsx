@@ -12,13 +12,10 @@ import {
   Container,
   Loader,
   Select,
+  Notification,
 } from "@mantine/core";
-import {
-  IconEdit,
-  IconTrash,
-  IconPlus,
-  IconAlertCircle,
-} from "@tabler/icons-react";
+import { notifications } from "@mantine/notifications";
+import { IconEdit, IconTrash, IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import {
@@ -32,10 +29,14 @@ interface PositionDetailProps {
 }
 
 const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
-  const [updatePosition, { isLoading: isUpdating }] =
-    useUpdatePositionMutation();
-  const [deletePosition, { isLoading: isDeleting, isSuccess: isDeleted }] =
-    useDeletePositionMutation();
+  const [
+    updatePosition,
+    { isLoading: isUpdating, error: updateError, isSuccess: isUpdateSuccess },
+  ] = useUpdatePositionMutation();
+  const [
+    deletePosition,
+    { isLoading: isDeleting, isSuccess: isDeleted, error: deleteError },
+  ] = useDeletePositionMutation();
 
   const [isEdit, setIsEdit] = useState(false);
   const { data: choices } = useGetChoicesQuery(undefined, {
@@ -58,7 +59,6 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
 
   const handleSave = async () => {
     if (!position) return;
-    console.log(data);
     await updatePosition({ id: position.id, ...data });
     setIsEdit(false);
   };
@@ -81,6 +81,55 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
           radius="lg"
           className="bg-white w-full max-w-2xl p-6 border border-customBlue hover:shadow-2xl"
         >
+          {isUpdateSuccess &&
+            notifications.show({
+              message: "Position updated successfully!",
+              autoClose: 500,
+              color: "green",
+              icon: true,
+              radius: "md",
+              className: "mb-4",
+            })}
+          {updateError &&
+            notifications.show({
+              message: updateError
+                ? updateError.data.message
+                : "An error occurred",
+              autoClose: 500,
+              color: "red",
+              icon: true,
+              radius: "md",
+              className: "mb-4",
+            })}
+
+          {isDeleted &&
+            notifications.show({
+              message: "Position deleted successfully!",
+              autoClose: 500,
+              color: "green",
+              icon: true,
+              radius: "md",
+              className: "mb-4",
+            })}
+
+          {deleteError &&
+            notifications.show({
+              message: deleteError
+                ? deleteError.data.message
+                : "An error occurred",
+              autoClose: 500,
+              color: "red",
+              icon: true,
+              radius: "md",
+              className: "mb-4",
+            })}
+
+          {deleteError && (
+            <Notification color="red" radius="md">
+              {deleteError && deleteError.data.message}
+            </Notification>
+          )}
+
           <div className="flex items-center space-x-4 mt-2">
             <Avatar
               size={60}

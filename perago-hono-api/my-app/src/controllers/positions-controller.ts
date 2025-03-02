@@ -29,7 +29,7 @@ const CreatePosition = async (c: Context): Promise<Response> => {
 const UpdatePosition = async (c: Context): Promise<Response> => {
   try {
     const id = c.req.param("id");
-    const { name, description, parentId }: any = await c.req.json();
+    const { name, description, parentId } = await c.req.json();
     const result = await positionCommandService.UpdatePosition(
       id,
       name,

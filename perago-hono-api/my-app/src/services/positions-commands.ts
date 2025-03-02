@@ -5,6 +5,7 @@ import type {
   PositionCommandServiceInterface,
 } from "../domain/interfaces/position-interface.js";
 import positionRepository from "../repositories/positions-repositories.js";
+import checkDescendant from "../utils/checkDescendant.js";
 
 const CreatePosition = async (
   name: string,
@@ -74,9 +75,10 @@ const UpdatePosition = async (
       parentId = pos.parentId;
     }
 
-    const children = await positionRepository.GetChildrenPosition(id);
-    const child = children.find((child) => child.id === parentId);
-    if (child) {
+    const positions = await positionRepository.GetAllPositions();
+    const childPositions = checkDescendant(positions, id);
+    const found = childPositions.find((child) => child === parentId);
+    if (found) {
       throw new HTTPException(400, {
         message: "Can not set child as parent",
       });

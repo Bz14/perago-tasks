@@ -48,10 +48,10 @@ export const positionApi = createApi({
     }),
 
     updatePosition: build.mutation({
-      query: ({ id, name, description }) => ({
+      query: ({ id, name, description, parentId }) => ({
         url: `/position/${id}`,
         method: "PUT",
-        body: { name, description },
+        body: { name, description, parentId },
       }),
       transformResponse: (response: { data: Position; message: string }) =>
         response.data,
