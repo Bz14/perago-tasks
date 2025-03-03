@@ -44,19 +44,23 @@ const LoginPage = () => {
   const { register, handleSubmit, formState, reset } = form;
   const { errors, isSubmitting } = formState;
 
-  const [createAdmin, { isLoading, isSuccess, error }] =
+  const [createAdmin, { isLoading, isSuccess, error, data: loginData }] =
     useCreateAdminMutation();
 
   const onError = (errors: FieldErrors) => {
     reset();
+    console.log(errors);
   };
 
-  const onSubmit = async (data: FormData) => {
-    createAdmin(data);
+  useEffect(() => {
     if (isSuccess) {
-      localStorage.setItem("admin", JSON.stringify(data));
+      localStorage.setItem("admin", JSON.stringify(loginData));
+      router.push("/positions/create");
     }
-    router.push("/position/create");
+  }, [isSuccess]);
+
+  const onSubmit = async (data: FormData) => {
+    await createAdmin(data);
   };
 
   return (
@@ -72,7 +76,7 @@ const LoginPage = () => {
           </Notification>
         )}
 
-        {error && <Notification color="red">{error}</Notification>}
+        {error && <Notification color="red">{error.data.error}</Notification>}
 
         <form
           onSubmit={handleSubmit(onSubmit, onError)}

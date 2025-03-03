@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useForm, FieldErrors } from "react-hook-form";
 import { notifications } from "@mantine/notifications";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -29,12 +30,13 @@ const schema = yup.object().shape({
 
 const CreatePosition = () => {
   const router = useRouter();
+  useEffect(() => {
+    if (!checkAdmin()) {
+      router.push("/admin/login");
+    }
+  }, []);
 
-  if (!checkAdmin()) {
-    router.push("/login");
-  }
-
-  const [createPosition, { isSuccess, isLoading, error }] =
+  const [createPosition, { isLoading, isSuccess, error }] =
     useCreatePositionMutation();
 
   const { data: choices } = useGetChoicesQuery(undefined);
@@ -57,9 +59,9 @@ const CreatePosition = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    try {
-      await createPosition(data);
-      reset();
+    await createPosition(data);
+    reset();
+    if (isSuccess) {
       notifications.show({
         title: "Success",
         message: "Position created successfully!",
@@ -68,14 +70,16 @@ const CreatePosition = () => {
         withCloseButton: true,
         position: "top-center",
       });
-    } catch (error: Error | any) {
-      console.log(error);
+    }
+
+    if (error) {
       notifications.show({
         title: "Failure",
         message: error ? error.data.message : "An error occurred",
         color: "red",
         autoClose: 500,
         withCloseButton: true,
+        position: "top-center",
       });
     }
   };

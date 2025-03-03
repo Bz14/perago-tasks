@@ -1,3 +1,4 @@
+"use client";
 const checkAdmin = () => {
   const admin = localStorage.getItem("admin");
   if (admin) {

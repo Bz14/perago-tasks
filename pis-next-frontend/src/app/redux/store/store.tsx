@@ -9,7 +9,9 @@ const store = configureStore({
   },
 
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(positionApi.middleware),
+    getDefaultMiddleware()
+      .concat(positionApi.middleware)
+      .concat(adminApi.middleware),
 });
 
 export default store;

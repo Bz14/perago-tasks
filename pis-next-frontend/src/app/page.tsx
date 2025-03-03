@@ -1,8 +1,11 @@
+"use client";
 import Link from "next/link";
 import { Button } from "@mantine/core";
 import { IconArrowRight } from "@tabler/icons-react";
+import checkAdmin from "./utils/checkAdmin";
 
 export default function Home() {
+  const admin = checkAdmin();
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-customBlue text-white mb-10">
       <div
@@ -22,15 +25,27 @@ export default function Home() {
         </p>
 
         <div className="mt-8 flex flex-wrap justify-center gap-6">
-          <Link href="/admin/login" passHref>
-            <Button
-              rightSection={<IconArrowRight size={18} />}
-              className="bg-white text-customBlue hover:bg-gray-400
-               text-lg px-6 py-1 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
-            >
-              Get Started
-            </Button>
-          </Link>
+          {admin ? (
+            <Link href="/positions/create" passHref>
+              <Button
+                rightSection={<IconArrowRight size={18} />}
+                className="bg-white text-customBlue hover:bg-gray-400
+                 text-lg px-6 py-1 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Get Started
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/admin/login" passHref>
+              <Button
+                rightSection={<IconArrowRight size={18} />}
+                className="bg-white text-customBlue hover:bg-gray-400
+                 text-lg px-6 py-1 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105"
+              >
+                Get Started
+              </Button>
+            </Link>
+          )}
         </div>
       </main>
     </div>

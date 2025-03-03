@@ -13,9 +13,12 @@ import checkAdmin from "@/app/utils/checkAdmin";
 const ViewPositionHierarchy = () => {
   const router = useRouter();
 
-  if (!checkAdmin()) {
-    router.push("/login");
-  }
+  useEffect(() => {
+    if (!checkAdmin()) {
+      router.push("/admin/login");
+    }
+  }, []);
+
   const { data: positions, isLoading } = useGetPositionsQuery(undefined);
   const [selectedNodeId, onSelectedNode] = useState<string | null>(null);
 

@@ -2,10 +2,11 @@
 import { Burger, Drawer, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
+import checkAdmin from "../utils/checkAdmin";
 
 const Navbar = () => {
   const [opened, { toggle, close }] = useDisclosure(false);
-  const admin = localStorage.getItem("admin");
+  const admin = checkAdmin();
 
   return (
     <header className="bg-white text-customBlue px-6 py-4 shadow-md fixed w-full top-0 z-50 ">
