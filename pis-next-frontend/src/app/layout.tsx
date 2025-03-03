@@ -29,7 +29,7 @@ export default function RootLayout({
             <Notifications />
             <Navbar />
             <div className="flex-grow">
-              <Notifications />
+              <Notifications limit={1} />
               {children}
             </div>
             <Footer />

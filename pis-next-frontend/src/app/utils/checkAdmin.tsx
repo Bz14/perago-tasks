@@ -1,8 +1,9 @@
-"use client";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store/store";
-
-export const useCheckAdminLoggedIn = () => {
-  const admin = useSelector((state: RootState) => state.admin);
-  return admin.isLogged;
+const checkAdmin = () => {
+  const admin = localStorage.getItem("admin");
+  if (admin) {
+    return true;
+  }
+  return false;
 };
+
+export default checkAdmin;

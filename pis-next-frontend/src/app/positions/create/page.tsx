@@ -1,22 +1,18 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useForm, FieldErrors } from "react-hook-form";
+import { notifications } from "@mantine/notifications";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
 import * as yup from "yup";
 import img from "../../../../public/images/img1.jpg";
-import {
-  TextInput,
-  Select,
-  Button,
-  Notification,
-  Loader,
-  Textarea,
-} from "@mantine/core";
+import { TextInput, Select, Button, Loader, Textarea } from "@mantine/core";
 import {
   useCreatePositionMutation,
   useGetChoicesQuery,
 } from "@/app/redux/slices/positionSlice";
+import checkAdmin from "@/app/utils/checkAdmin";
 
 import { FormData } from "@/app/interfaces/interface";
 
@@ -32,6 +28,12 @@ const schema = yup.object().shape({
 });
 
 const CreatePosition = () => {
+  const router = useRouter();
+
+  if (!checkAdmin()) {
+    router.push("/login");
+  }
+
   const [createPosition, { isSuccess, isLoading, error }] =
     useCreatePositionMutation();
 
@@ -55,9 +57,27 @@ const CreatePosition = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    console.log(data);
-    await createPosition(data);
-    reset();
+    try {
+      await createPosition(data);
+      reset();
+      notifications.show({
+        title: "Success",
+        message: "Position created successfully!",
+        color: "green",
+        autoClose: 500,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    } catch (error: Error | any) {
+      console.log(error);
+      notifications.show({
+        title: "Failure",
+        message: error ? error.data.message : "An error occurred",
+        color: "red",
+        autoClose: 500,
+        withCloseButton: true,
+      });
+    }
   };
 
   return (
@@ -75,18 +95,6 @@ const CreatePosition = () => {
         <h2 className="text-xl font-bold text-center text-customBlue">
           Create New Position
         </h2>
-
-        {isSuccess && (
-          <Notification color="green" radius="md" className="mb-4">
-            Position created successfully!
-          </Notification>
-        )}
-        {error && (
-          <Notification color="red" radius="md">
-            {error && error.data ? error.data.message : "An error occurred"}
-          </Notification>
-        )}
-
         <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
           <div>
             <TextInput

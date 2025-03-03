@@ -12,13 +12,7 @@ import {
   Notification,
   Loader,
 } from "@mantine/core";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/app/redux/store/store";
-import {
-  Login,
-  resetSuccessState,
-  resetErrorState,
-} from "@/app/redux/slices/adminSlice";
+import { useCreateAdminMutation } from "@/app/redux/slices/adminSlice";
 
 type FormData = {
   userName: string;
@@ -38,10 +32,6 @@ const schema = yup.object().shape({
 
 const LoginPage = () => {
   const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
-  const { loading, success, error } = useSelector(
-    (state: RootState) => state.admin
-  );
 
   const form = useForm({
     defaultValues: {
@@ -54,36 +44,19 @@ const LoginPage = () => {
   const { register, handleSubmit, formState, reset } = form;
   const { errors, isSubmitting } = formState;
 
-  useEffect(() => {
-    dispatch(resetSuccessState());
-  }, []);
-
-  useEffect(() => {
-    if (success) {
-      setTimeout(() => {
-        reset();
-        dispatch(resetSuccessState());
-        router.push("/positions/create");
-      }, 2000);
-    }
-  }, [success]);
-
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        reset();
-        dispatch(resetErrorState());
-      }, 1000);
-    }
-  }, [error]);
+  const [createAdmin, { isLoading, isSuccess, error }] =
+    useCreateAdminMutation();
 
   const onError = (errors: FieldErrors) => {
     reset();
-    console.log(errors);
   };
 
   const onSubmit = async (data: FormData) => {
-    dispatch(Login(data));
+    createAdmin(data);
+    if (isSuccess) {
+      localStorage.setItem("admin", JSON.stringify(data));
+    }
+    router.push("/position/create");
   };
 
   return (
@@ -93,7 +66,7 @@ const LoginPage = () => {
           Admin Login
         </h2>
 
-        {success && (
+        {isSuccess && (
           <Notification color="green">
             Login successful! Redirecting...
           </Notification>
@@ -140,7 +113,7 @@ const LoginPage = () => {
             fullWidth
             className="bg-customBlue hover:bg-gray-500 text-white"
           >
-            {loading && isSubmitting ? (
+            {isLoading && isSubmitting ? (
               <Loader color="white" size="sm" />
             ) : (
               "Login"

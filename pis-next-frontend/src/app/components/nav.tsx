@@ -2,12 +2,10 @@
 import { Burger, Drawer, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
-import { useSelector } from "react-redux";
-import { RootState } from "@/app/redux/store/store";
 
 const Navbar = () => {
   const [opened, { toggle, close }] = useDisclosure(false);
-  const { isLogged } = useSelector((state: RootState) => state.admin);
+  const admin = localStorage.getItem("admin");
 
   return (
     <header className="bg-white text-customBlue px-6 py-4 shadow-md fixed w-full top-0 z-50 ">
@@ -20,7 +18,7 @@ const Navbar = () => {
           <Link href="/" className="hover:text-gray-400">
             Home
           </Link>
-          {isLogged && (
+          {admin && (
             <Link href="/positions/view" className="hover:text-gray-400">
               View
             </Link>
@@ -29,7 +27,7 @@ const Navbar = () => {
           <Link href="/about" className="hover:text-gray-400">
             About
           </Link>
-          {isLogged ? (
+          {admin ? (
             <Button
               component={Link}
               href="/positions/create"
@@ -62,7 +60,7 @@ const Navbar = () => {
               Home
             </Link>
 
-            {isLogged && (
+            {admin && (
               <Link
                 href="/positions/view"
                 className="hover:text-gray-400"
@@ -76,7 +74,7 @@ const Navbar = () => {
               About
             </Link>
 
-            {isLogged ? (
+            {admin ? (
               <Button
                 component={Link}
                 onClick={close}

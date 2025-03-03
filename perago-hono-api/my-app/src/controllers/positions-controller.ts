@@ -30,6 +30,7 @@ const UpdatePosition = async (c: Context): Promise<Response> => {
   try {
     const id = c.req.param("id");
     const { name, description, parentId } = await c.req.json();
+    console.log(id, name, description, parentId);
     const result = await positionCommandService.UpdatePosition(
       id,
       name,
@@ -42,6 +43,7 @@ const UpdatePosition = async (c: Context): Promise<Response> => {
       message: "Position updated successfully.",
     });
   } catch (error: Error | any) {
+    console.log(error);
     throw new HTTPException(error.status, { message: error.message });
   }
 };

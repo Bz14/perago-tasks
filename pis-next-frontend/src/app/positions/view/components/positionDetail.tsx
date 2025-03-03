@@ -59,14 +59,57 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
 
   const handleSave = async () => {
     if (!position) return;
-    await updatePosition({ id: position.id, ...data });
+    await updatePosition({ id: position?.id ?? "", ...data });
     setIsEdit(false);
+    setData({ ...data, parentId: "" });
+
+    if (isUpdateSuccess) {
+      notifications.show({
+        title: "Success",
+        message: "Position updated successfully!",
+        color: "green",
+        autoClose: 500,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    }
+
+    if (updateError) {
+      notifications.show({
+        title: "Failure",
+        message: updateError?.data.message ?? "An error occurred",
+        color: "red",
+        autoClose: 500,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    }
   };
 
   const handleDelete = async () => {
     if (!position) return;
-    await deletePosition(position.id);
-    closeModal();
+    try {
+      await deletePosition(position.id);
+      closeModal();
+      notifications.show({
+        title: "Success",
+        message: "Position deleted successfully!",
+        color: "green",
+        autoClose: 500,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    } catch (error: Error | any) {
+      console.log("Error", error);
+      notifications.show({
+        title: "Failure",
+        message: error ? error.data.message : "An error occurred",
+        color: "red",
+        autoClose: 500,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    }
   };
 
   if (!position) {
@@ -81,55 +124,6 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
           radius="lg"
           className="bg-white w-full max-w-2xl p-6 border border-customBlue hover:shadow-2xl"
         >
-          {isUpdateSuccess &&
-            notifications.show({
-              message: "Position updated successfully!",
-              autoClose: 500,
-              color: "green",
-              icon: true,
-              radius: "md",
-              className: "mb-4",
-            })}
-          {updateError &&
-            notifications.show({
-              message: updateError
-                ? updateError.data.message
-                : "An error occurred",
-              autoClose: 500,
-              color: "red",
-              icon: true,
-              radius: "md",
-              className: "mb-4",
-            })}
-
-          {isDeleted &&
-            notifications.show({
-              message: "Position deleted successfully!",
-              autoClose: 500,
-              color: "green",
-              icon: true,
-              radius: "md",
-              className: "mb-4",
-            })}
-
-          {deleteError &&
-            notifications.show({
-              message: deleteError
-                ? deleteError.data.message
-                : "An error occurred",
-              autoClose: 500,
-              color: "red",
-              icon: true,
-              radius: "md",
-              className: "mb-4",
-            })}
-
-          {deleteError && (
-            <Notification color="red" radius="md">
-              {deleteError && deleteError.data.message}
-            </Notification>
-          )}
-
           <div className="flex items-center space-x-4 mt-2">
             <Avatar
               size={60}
