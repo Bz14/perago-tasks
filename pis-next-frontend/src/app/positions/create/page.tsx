@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm, FieldErrors } from "react-hook-form";
 import { notifications } from "@mantine/notifications";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import Image from "next/image";
-import * as yup from "yup";
 import img from "../../../../public/images/img1.jpg";
 import { TextInput, Select, Button, Loader, Textarea } from "@mantine/core";
 import {
@@ -17,15 +17,15 @@ import checkAdmin from "@/app/utils/checkAdmin";
 
 import { FormData } from "@/app/interfaces/interface";
 
-const schema = yup.object().shape({
-  name: yup
+const schema = z.object({
+  name: z
     .string()
-    .required("Position name is required!")
+    .nonempty("Position name is required!")
     .min(2, "Position name must be at least 2 characters!"),
-  description: yup
+  description: z
     .string()
     .min(10, "Description must be at least 10 characters!"),
-  parentId: yup.string(),
+  parentId: z.string(),
 });
 
 const CreatePosition = () => {
@@ -47,7 +47,7 @@ const CreatePosition = () => {
       parentId: "",
     },
     mode: "all",
-    resolver: yupResolver(schema),
+    resolver: zodResolver(schema),
   });
   const { register, handleSubmit, formState, reset, setValue } = form;
   const { errors, isSubmitting } = formState;
@@ -68,7 +68,6 @@ const CreatePosition = () => {
         withCloseButton: true,
         position: "top-center",
       });
-      reset();
     } catch (error: Error | any) {
       notifications.show({
         title: "Failure",
@@ -79,6 +78,7 @@ const CreatePosition = () => {
         position: "top-center",
       });
     }
+    reset();
   };
 
   return (
@@ -133,7 +133,7 @@ const CreatePosition = () => {
               data={choices && choices.length > 0 ? choices : []}
               {...register("parentId")}
               error={errors.parentId?.message}
-              onChange={(value) => setValue("parentId", value)}
+              onChange={(value) => setValue("parentId", value ?? "")}
               classNames={{
                 input:
                   "border-gray-300 p-3 rounded-lg focus:ring-customBlue w-full outline-none",
