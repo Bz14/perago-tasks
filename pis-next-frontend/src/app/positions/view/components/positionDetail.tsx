@@ -28,10 +28,8 @@ interface PositionDetailProps {
 }
 
 const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
-  const [
-    updatePosition,
-    { isLoading: isUpdating, error: updateError, isSuccess: isUpdateSuccess },
-  ] = useUpdatePositionMutation();
+  const [updatePosition, { isLoading: isUpdating }] =
+    useUpdatePositionMutation();
   const [deletePosition, { isLoading: isDeleting, isSuccess: isDeleted }] =
     useDeletePositionMutation();
 
@@ -56,11 +54,9 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
 
   const handleSave = async () => {
     if (!position) return;
-    await updatePosition({ id: position?.id ?? "", ...data });
-    setIsEdit(false);
-    setData({ ...data, parentId: "" });
 
-    if (isUpdateSuccess) {
+    try {
+      await updatePosition({ id: position?.id ?? "", ...data }).unwrap();
       notifications.show({
         title: "Success",
         message: "Position updated successfully!",
@@ -69,24 +65,24 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
         withCloseButton: true,
         position: "top-center",
       });
-    }
-
-    if (updateError) {
+    } catch (error: Error | any) {
       notifications.show({
         title: "Failure",
-        message: updateError?.data.message ?? "An error occurred",
+        message: error ? error.data.message : "An error occurred",
         color: "red",
         autoClose: 500,
         withCloseButton: true,
         position: "top-center",
       });
     }
+    setIsEdit(false);
+    setData({ ...data, parentId: "" });
   };
 
   const handleDelete = async () => {
     if (!position) return;
     try {
-      await deletePosition(position.id);
+      await deletePosition(position.id).unwrap();
       closeModal();
       notifications.show({
         title: "Success",
@@ -97,7 +93,6 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
         position: "top-center",
       });
     } catch (error: Error | any) {
-      console.log("Error", error);
       notifications.show({
         title: "Failure",
         message: error ? error.data.message : "An error occurred",

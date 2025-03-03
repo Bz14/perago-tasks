@@ -36,8 +36,7 @@ const CreatePosition = () => {
     }
   }, []);
 
-  const [createPosition, { isLoading, isSuccess, error }] =
-    useCreatePositionMutation();
+  const [createPosition, { isLoading }] = useCreatePositionMutation();
 
   const { data: choices } = useGetChoicesQuery(undefined);
 
@@ -59,9 +58,8 @@ const CreatePosition = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    await createPosition(data);
-    reset();
-    if (isSuccess) {
+    try {
+      await createPosition(data).unwrap();
       notifications.show({
         title: "Success",
         message: "Position created successfully!",
@@ -70,9 +68,8 @@ const CreatePosition = () => {
         withCloseButton: true,
         position: "top-center",
       });
-    }
-
-    if (error) {
+      reset();
+    } catch (error: Error | any) {
       notifications.show({
         title: "Failure",
         message: error ? error.data.message : "An error occurred",
