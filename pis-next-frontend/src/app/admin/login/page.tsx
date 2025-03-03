@@ -76,7 +76,11 @@ const LoginPage = () => {
           </Notification>
         )}
 
-        {error && <Notification color="red">{error.data.error}</Notification>}
+        {error && (
+          <Notification color="red">
+            {JSON.stringify(error.data.message)}
+          </Notification>
+        )}
 
         <form
           onSubmit={handleSubmit(onSubmit, onError)}

@@ -36,6 +36,7 @@ export const positionApi = createApi({
 
       transformResponse: (response: {
         data: {
+          id: string;
           name: string;
           description: string;
           parentId: string;

@@ -23,7 +23,6 @@ import {
   useDeletePositionMutation,
   useGetChoicesQuery,
 } from "@/app/redux/slices/positionSlice";
-
 interface PositionDetailProps {
   position: PositionNode | null;
 }
@@ -33,10 +32,8 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
     updatePosition,
     { isLoading: isUpdating, error: updateError, isSuccess: isUpdateSuccess },
   ] = useUpdatePositionMutation();
-  const [
-    deletePosition,
-    { isLoading: isDeleting, isSuccess: isDeleted, error: deleteError },
-  ] = useDeletePositionMutation();
+  const [deletePosition, { isLoading: isDeleting, isSuccess: isDeleted }] =
+    useDeletePositionMutation();
 
   const [isEdit, setIsEdit] = useState(false);
   const { data: choices } = useGetChoicesQuery(undefined, {

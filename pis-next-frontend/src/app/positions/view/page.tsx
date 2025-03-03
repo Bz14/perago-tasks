@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { OrganizationNode } from "@/app/interfaces/interface";
 import {
   useGetPositionsQuery,
   useGetPositionByIdQuery,
@@ -36,9 +35,8 @@ const ViewPositionHierarchy = () => {
         positions={positions || []}
         isLoading={isLoading}
         onSelectNode={handleSelectNode}
-        // error={error.data.message || "Error"}
       />
-      <PositionDetail position={selectedPosition} />
+      <PositionDetail position={selectedPosition || null} />
     </div>
   );
 };
