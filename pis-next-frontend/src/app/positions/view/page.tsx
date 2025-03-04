@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import {
   useGetPositionsQuery,
   useGetPositionByIdQuery,
+  useDeletePositionMutation,
 } from "@/app/redux/slices/positionSlice";
 import PositionDetail from "./components/positionDetail";
 import PositionTree from "./components/position-tree";
@@ -20,13 +21,28 @@ const ViewPositionHierarchy = () => {
 
   const { data: positions, isLoading } = useGetPositionsQuery(undefined);
   const [selectedNodeId, onSelectedNode] = useState<string | null>(null);
+  const [deletePosition] = useDeletePositionMutation();
 
   const { data: selectedPosition } = useGetPositionByIdQuery(selectedNodeId, {
     skip: !selectedNodeId,
   });
 
+  useEffect(() => {
+    console.log("Current selectedNodeId:", selectedNodeId);
+  }, [selectedNodeId]);
+
   const handleSelectNode = (id: string | null) => {
+    console.log("Selected node:", id);
     onSelectedNode(id);
+  };
+
+  const handleDeletePosition = async (id: string) => {
+    try {
+      await deletePosition(id).unwrap();
+      onSelectedNode(null);
+    } catch (error: Error | any) {
+      throw new Error(error);
+    }
   };
 
   return (
@@ -36,7 +52,10 @@ const ViewPositionHierarchy = () => {
         isLoading={isLoading}
         onSelectNode={handleSelectNode}
       />
-      <PositionDetail position={selectedPosition || null} />
+      <PositionDetail
+        position={selectedPosition || null}
+        onPositionDeleted={handleDeletePosition}
+      />
     </div>
   );
 };
