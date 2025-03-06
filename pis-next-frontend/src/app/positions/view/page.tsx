@@ -34,6 +34,10 @@ const ViewPositionHierarchy = () => {
     onSelectedNode(id);
   };
 
+  const handlePositionDeleted = () => {
+    onSelectedNode(null);
+  };
+
   return (
     <div className="flex flex-row mx-5 mt-5 gap-2 items-start mb-4">
       <PositionTree
@@ -41,7 +45,10 @@ const ViewPositionHierarchy = () => {
         isLoading={isLoading}
         onSelectNode={handleSelectNode}
       />
-      <PositionDetail position={selectedPosition || null} />
+      <PositionDetail
+        position={selectedPosition || null}
+        onPositionDeleted={handlePositionDeleted}
+      />
     </div>
   );
 };

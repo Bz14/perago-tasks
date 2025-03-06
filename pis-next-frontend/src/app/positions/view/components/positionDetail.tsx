@@ -12,7 +12,6 @@ import {
   Container,
   Loader,
   Select,
-  Notification,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { IconEdit, IconTrash, IconPlus } from "@tabler/icons-react";
@@ -23,9 +22,13 @@ import positionApi from "@/app/api/api";
 
 interface PositionDetailProps {
   position: PositionNode | null;
+  onPositionDeleted: () => void;
 }
 
-const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
+const PositionDetail: React.FC<PositionDetailProps> = ({
+  position,
+  onPositionDeleted,
+}) => {
   const queryClient = useQueryClient();
 
   const updatePosition = useMutation({
@@ -91,8 +94,48 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
 
   const deletePosition = useMutation({
     mutationFn: (id: string) => positionApi.deletePositionById(id),
+
+    onMutate: () => {
+      queryClient.cancelQueries({ queryKey: ["position", position?.id] });
+
+      const previousData = queryClient.getQueryData(["positions"]);
+
+      queryClient.setQueryData(["positions"], (oldData: PositionNode[]) =>
+        oldData.filter((pos) => pos.id !== position?.id)
+      );
+
+      return { previousData };
+    },
+
+    onError: (error: Error, _variables, context) => {
+      queryClient.setQueryData(
+        ["position", position?.id],
+        context?.previousData
+      );
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      notifications.show({
+        title: "Failure",
+        message: error ? error.message : "An error occurred",
+        color: "red",
+        autoClose: 1000,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["positions"] });
+      notifications.show({
+        title: "Success",
+        message: "Position deleted successfully!",
+        color: "green",
+        autoClose: 1000,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    },
+
+    onSettled: () => {
+      onPositionDeleted();
     },
   });
 
@@ -130,27 +173,8 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
 
   const handleDelete = async () => {
     if (!position) return;
-    try {
-      deletePosition.mutate(position.id ?? "");
-      closeModal();
-      notifications.show({
-        title: "Success",
-        message: "Position deleted successfully!",
-        color: "green",
-        autoClose: 1000,
-        withCloseButton: true,
-        position: "top-center",
-      });
-    } catch (error: Error | any) {
-      notifications.show({
-        title: "Failure",
-        message: error ? error.data.message : "An error occurred",
-        color: "red",
-        autoClose: 1000,
-        withCloseButton: true,
-        position: "top-center",
-      });
-    }
+    deletePosition.mutate(position.id ?? "");
+    closeModal();
   };
 
   if (!position) {
@@ -170,7 +194,7 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
             radius="xl"
             className="bg-customBlue text-white text-xl shadow-xl"
           >
-            {position.name.charAt(0)}
+            {position && position.name && position.name.charAt(0)}
           </Avatar>
           <div>
             {isEdit ? (
@@ -215,22 +239,23 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
           </div>
         )}
 
-        {position.children?.length > 0 && (
+        {position && position.children?.length > 0 && (
           <>
             <Divider className="my-4" />
             <Text className="text-xl font-semibold text-customBlue">
               Team Members
             </Text>
             <div className="mt-2 flex flex-wrap gap-2">
-              {position.children.map((member) => (
-                <Badge
-                  key={member.id}
-                  className="text-white bg-customBlue"
-                  size="md"
-                >
-                  {member.name}
-                </Badge>
-              ))}
+              {position &&
+                position.children.map((member) => (
+                  <Badge
+                    key={member.id}
+                    className="text-white bg-customBlue"
+                    size="md"
+                  >
+                    {member.name}
+                  </Badge>
+                ))}
             </div>
           </>
         )}

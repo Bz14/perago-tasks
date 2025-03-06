@@ -2,22 +2,13 @@
 
 import { useForm, FieldErrors } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect } from "react";
 import * as yup from "yup";
 import { useRouter } from "next/navigation";
-import {
-  TextInput,
-  PasswordInput,
-  Button,
-  Notification,
-  Loader,
-} from "@mantine/core";
-import { useCreateAdminMutation } from "@/app/redux/slices/adminSlice";
-
-type FormData = {
-  userName: string;
-  password: string;
-};
+import { TextInput, PasswordInput, Button, Loader } from "@mantine/core";
+import { useMutation } from "@tanstack/react-query";
+import { notifications } from "@mantine/notifications";
+import positionApi from "@/app/api/api";
+import { LoginFormData } from "@/app/interfaces/interface";
 
 const schema = yup.object().shape({
   username: yup
@@ -44,23 +35,41 @@ const LoginPage = () => {
   const { register, handleSubmit, formState, reset } = form;
   const { errors, isSubmitting } = formState;
 
-  const [createAdmin, { isLoading, isSuccess, error, data: loginData }] =
-    useCreateAdminMutation();
+  const loginMutation = useMutation({
+    mutationFn: (data: LoginFormData) => positionApi.login(data),
+    onSuccess: (loginData) => {
+      localStorage.setItem("admin", JSON.stringify(loginData));
+      router.push("/positions/create");
+      notifications.show({
+        title: "Success",
+        message: "Login successful! Redirecting...",
+        color: "green",
+        autoClose: 1000,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Failure",
+        message: error ? error.message : "An error occurred",
+        color: "red",
+        autoClose: 1000,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    },
+    onSettled: () => {
+      reset();
+    },
+  });
 
   const onError = (errors: FieldErrors) => {
-    reset();
     console.log(errors);
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      localStorage.setItem("admin", JSON.stringify(loginData));
-      router.push("/positions/create");
-    }
-  }, [isSuccess]);
-
-  const onSubmit = async (data: FormData) => {
-    await createAdmin(data);
+  const onSubmit = async (data: LoginFormData) => {
+    loginMutation.mutate(data);
   };
 
   return (
@@ -69,18 +78,6 @@ const LoginPage = () => {
         <h2 className="text-2xl font-bold text-center text-customBlue">
           Admin Login
         </h2>
-
-        {isSuccess && (
-          <Notification color="green">
-            Login successful! Redirecting...
-          </Notification>
-        )}
-
-        {error && (
-          <Notification color="red">
-            {JSON.stringify(error.data.message)}
-          </Notification>
-        )}
 
         <form
           onSubmit={handleSubmit(onSubmit, onError)}
@@ -121,7 +118,7 @@ const LoginPage = () => {
             fullWidth
             className="bg-customBlue hover:bg-gray-500 text-white"
           >
-            {isLoading && isSubmitting ? (
+            {loginMutation.isPending && isSubmitting ? (
               <Loader color="white" size="sm" />
             ) : (
               "Login"

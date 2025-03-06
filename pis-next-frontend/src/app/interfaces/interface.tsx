@@ -34,3 +34,8 @@ export type TreeNode = {
   label: string;
   children?: TreeNode[];
 };
+
+export type LoginFormData = {
+  username: string;
+  password: string;
+};

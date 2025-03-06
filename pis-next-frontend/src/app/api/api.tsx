@@ -3,6 +3,7 @@ import {
   Position,
   OrganizationNode,
   PositionNode,
+  LoginFormData,
 } from "../interfaces/interface";
 
 const URL = process.env.API_URL || "http://localhost:5000/api/v1";
@@ -96,10 +97,9 @@ const deletePositionById = async (id: string | null): Promise<Position> => {
   }
 };
 
-const login = async (data: {
-  username: string;
-  password: string;
-}): Promise<{ id: string; userName: string }> => {
+const login = async (
+  data: LoginFormData
+): Promise<{ id: string; userName: string }> => {
   try {
     const response = await axios.post(`${URL}/auth`, data);
     return response.data.data;

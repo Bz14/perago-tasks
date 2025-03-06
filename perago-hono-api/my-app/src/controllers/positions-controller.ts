@@ -30,7 +30,6 @@ const UpdatePosition = async (c: Context): Promise<Response> => {
   try {
     const id = c.req.param("id");
     const { name, description, parentId } = await c.req.json();
-    console.log(await c.req.json());
     const result = await positionCommandService.UpdatePosition(
       id,
       name,
