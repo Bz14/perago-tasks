@@ -43,7 +43,30 @@ const CreatePosition = () => {
       parentId: string;
     }) => positionApi.createPosition(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["positions", "choices"] });
+      notifications.show({
+        title: "Success",
+        message: "Position created successfully!",
+        color: "green",
+        autoClose: 1000,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    },
+    onError: (error: Error) => {
+      notifications.show({
+        title: "Failure",
+        message: error ? error.message : "An error occurred",
+        color: "red",
+        autoClose: 1000,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["choices"] });
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+      reset();
     },
   });
 
@@ -70,28 +93,7 @@ const CreatePosition = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    try {
-      await createPosition.mutateAsync(data);
-      notifications.show({
-        title: "Success",
-        message: "Position created successfully!",
-        color: "green",
-        autoClose: 500,
-        withCloseButton: true,
-        position: "top-center",
-      });
-    } catch (error: Error | any) {
-      console.log("The error", error);
-      notifications.show({
-        title: "Failure",
-        message: error ? error.message : "An error occurred",
-        color: "red",
-        autoClose: 500,
-        withCloseButton: true,
-        position: "top-center",
-      });
-    }
-    reset();
+    createPosition.mutate(data);
   };
 
   return (

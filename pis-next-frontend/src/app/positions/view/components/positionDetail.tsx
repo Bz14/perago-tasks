@@ -38,8 +38,54 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
       position
         ? positionApi.updatePosition(position.id, data)
         : Promise.reject(new Error("Position is null")),
+
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ["position", position?.id] });
+
+      const previousData = queryClient.getQueryData(["position", position?.id]);
+
+      queryClient.setQueryData(
+        ["position", position?.id],
+        (oldData: PositionNode | undefined) => ({
+          ...oldData,
+          ...newData,
+        })
+      );
+
+      return { previousData };
+    },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["positions"] });
+      queryClient.invalidateQueries({ queryKey: ["position", position?.id] });
+      notifications.show({
+        title: "Success",
+        message: "Position updated successfully!",
+        color: "green",
+        autoClose: 1000,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    },
+
+    onError: (error: Error, _variables, context) => {
+      queryClient.setQueryData(
+        ["position", position?.id],
+        context?.previousData
+      );
+      notifications.show({
+        title: "Failure",
+        message: error ? error.message : "An error occurred",
+        color: "red",
+        autoClose: 1000,
+        withCloseButton: true,
+        position: "top-center",
+      });
+    },
+
+    onSettled: () => {
+      setIsEdit(false);
+      setData({ ...data, parentId: "" });
     },
   });
 
@@ -74,34 +120,12 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
 
   const handleSave = async () => {
     if (!position) return;
-
-    try {
-      updatePosition.mutate({
-        id: position.id,
-        name: data.name,
-        description: data.description,
-        parentId: data.parentId,
-      });
-      notifications.show({
-        title: "Success",
-        message: "Position updated successfully!",
-        color: "green",
-        autoClose: 1000,
-        withCloseButton: true,
-        position: "top-center",
-      });
-    } catch (error: Error | any) {
-      notifications.show({
-        title: "Failure",
-        message: error ? error.data.message : "An error occurred",
-        color: "red",
-        autoClose: 1000,
-        withCloseButton: true,
-        position: "top-center",
-      });
-    }
-    setIsEdit(false);
-    setData({ ...data, parentId: "" });
+    updatePosition.mutate({
+      id: position.id,
+      name: data.name,
+      description: data.description,
+      parentId: data.parentId,
+    });
   };
 
   const handleDelete = async () => {
@@ -220,7 +244,7 @@ const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
             onClick={isEdit ? handleSave : () => setIsEdit(true)}
             disabled={updatePosition.isPending}
           >
-            {updatePosition ? (
+            {updatePosition.isPending ? (
               <Loader size="sm" color="white" />
             ) : isEdit ? (
               "Save"

@@ -17,12 +17,9 @@ const createPosition = async (data: {
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.message);
+      throw new Error(error.response.data.message || error.message);
     }
-    if (error instanceof Error) {
-      console.log("Here");
-      throw new Error(error.message);
-    }
+
     throw new Error("An unknown error occurred");
   }
 };
@@ -33,11 +30,9 @@ const getChoices = async (): Promise<{ value: string; label: string }[]> => {
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error);
+      throw new Error(error.response.data.message || error.message);
     }
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
+
     throw new Error("An unknown error occurred");
   }
 };
@@ -48,11 +43,9 @@ const getPositions = async (): Promise<OrganizationNode[]> => {
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error);
+      throw new Error(error.response.data.message || error.message);
     }
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
+
     throw new Error("An unknown error occurred");
   }
 };
@@ -63,32 +56,29 @@ const getPositionById = async (id: string | null): Promise<PositionNode> => {
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error);
+      throw new Error(error.response.data.message || error.message);
     }
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
+
     throw new Error("An unknown error occurred");
   }
 };
 
 const updatePosition = async (
   id: string | null,
-  data: { name: string; description: string }
+  data: { name: string; description: string; parentId: string }
 ): Promise<Position> => {
   try {
     const response = await axios.put(`${URL}/position/${id}`, {
       name: data.name,
       description: data.description,
+      parentId: data.parentId,
     });
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error);
+      throw new Error(error.response.data.message || error.message);
     }
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
+
     throw new Error("An unknown error occurred");
   }
 };
@@ -99,11 +89,9 @@ const deletePositionById = async (id: string | null): Promise<Position> => {
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error);
+      throw new Error(error.response.data.message || error.message);
     }
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
+
     throw new Error("An unknown error occurred");
   }
 };
@@ -117,11 +105,9 @@ const login = async (data: {
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
-      throw new Error(error.response.data.error);
+      throw new Error(error.response.data.message || error.message);
     }
-    if (error instanceof Error) {
-      throw new Error(error.message);
-    }
+
     throw new Error("An unknown error occurred");
   }
 };
