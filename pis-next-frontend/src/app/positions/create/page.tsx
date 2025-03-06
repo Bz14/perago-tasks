@@ -9,10 +9,9 @@ import { z } from "zod";
 import Image from "next/image";
 import img from "../../../../public/images/img1.jpg";
 import { TextInput, Select, Button, Loader, Textarea } from "@mantine/core";
-import {
-  useCreatePositionMutation,
-  useGetChoicesQuery,
-} from "@/app/redux/slices/positionSlice";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import positionApi from "@/app/api/api";
+
 import checkAdmin from "@/app/utils/checkAdmin";
 
 import { FormData } from "@/app/interfaces/interface";
@@ -29,6 +28,7 @@ const schema = z.object({
 });
 
 const CreatePosition = () => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   useEffect(() => {
     if (!checkAdmin()) {
@@ -36,9 +36,21 @@ const CreatePosition = () => {
     }
   }, []);
 
-  const [createPosition, { isLoading }] = useCreatePositionMutation();
+  const createPosition = useMutation({
+    mutationFn: (data: {
+      name: string;
+      description: string;
+      parentId: string;
+    }) => positionApi.createPosition(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["positions", "choices"] });
+    },
+  });
 
-  const { data: choices } = useGetChoicesQuery(undefined);
+  const { data: choices } = useQuery({
+    queryKey: ["choices"],
+    queryFn: positionApi.getChoices,
+  });
 
   const form = useForm({
     defaultValues: {
@@ -59,7 +71,7 @@ const CreatePosition = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await createPosition(data).unwrap();
+      await createPosition.mutateAsync(data);
       notifications.show({
         title: "Success",
         message: "Position created successfully!",
@@ -69,9 +81,10 @@ const CreatePosition = () => {
         position: "top-center",
       });
     } catch (error: Error | any) {
+      console.log("The error", error);
       notifications.show({
         title: "Failure",
-        message: error ? error.data.message : "An error occurred",
+        message: error ? error.message : "An error occurred",
         color: "red",
         autoClose: 500,
         withCloseButton: true,
@@ -148,7 +161,7 @@ const CreatePosition = () => {
             fullWidth
             className="bg-customBlue hover:bg-gray-500 text-white mt-4"
           >
-            {isLoading && isSubmitting ? (
+            {createPosition.isPending && isSubmitting ? (
               <Loader color="white" size="sm" />
             ) : (
               "Create Position"

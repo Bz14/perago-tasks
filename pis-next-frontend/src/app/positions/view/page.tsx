@@ -1,14 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import {
-  useGetPositionsQuery,
-  useGetPositionByIdQuery,
-  useDeletePositionMutation,
-} from "@/app/redux/slices/positionSlice";
+import { useQuery } from "@tanstack/react-query";
+
 import PositionDetail from "./components/positionDetail";
 import PositionTree from "./components/position-tree";
 import { useRouter } from "next/navigation";
 import checkAdmin from "@/app/utils/checkAdmin";
+import positionApi from "@/app/api/api";
 
 const ViewPositionHierarchy = () => {
   const router = useRouter();
@@ -19,30 +17,21 @@ const ViewPositionHierarchy = () => {
     }
   }, []);
 
-  const { data: positions, isLoading } = useGetPositionsQuery(undefined);
-  const [selectedNodeId, onSelectedNode] = useState<string | null>(null);
-  const [deletePosition] = useDeletePositionMutation();
-
-  const { data: selectedPosition } = useGetPositionByIdQuery(selectedNodeId, {
-    skip: !selectedNodeId,
+  const { data: positions, isLoading } = useQuery({
+    queryKey: ["positions"],
+    queryFn: positionApi.getPositions,
   });
 
-  useEffect(() => {
-    console.log("Current selectedNodeId:", selectedNodeId);
-  }, [selectedNodeId]);
+  const [selectedNodeId, onSelectedNode] = useState<string | null>(null);
+
+  const { data: selectedPosition } = useQuery({
+    queryKey: selectedNodeId ? ["position", selectedNodeId] : [],
+    queryFn: () => positionApi.getPositionById(selectedNodeId),
+    enabled: !!selectedNodeId,
+  });
 
   const handleSelectNode = (id: string | null) => {
-    console.log("Selected node:", id);
     onSelectedNode(id);
-  };
-
-  const handleDeletePosition = async (id: string) => {
-    try {
-      await deletePosition(id).unwrap();
-      onSelectedNode(null);
-    } catch (error: Error | any) {
-      throw new Error(error);
-    }
   };
 
   return (
@@ -52,10 +41,7 @@ const ViewPositionHierarchy = () => {
         isLoading={isLoading}
         onSelectNode={handleSelectNode}
       />
-      <PositionDetail
-        position={selectedPosition || null}
-        onPositionDeleted={handleDeletePosition}
-      />
+      <PositionDetail position={selectedPosition || null} />
     </div>
   );
 };

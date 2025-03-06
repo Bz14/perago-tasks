@@ -6,7 +6,7 @@ import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import Navbar from "./components/nav";
 import Footer from "./components/footer";
-import Providers from "./redux/provider";
+import Providers from "./client/provider";
 
 export const metadata: Metadata = {
   title: "Organizational hierarchy.",

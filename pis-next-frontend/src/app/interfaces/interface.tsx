@@ -7,8 +7,8 @@ export interface Position {
 
 export type FormData = {
   name: string;
-  description?: string;
-  parentId?: string;
+  description: string;
+  parentId: string;
 };
 
 export type OrganizationNode = {

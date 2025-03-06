@@ -18,6 +18,7 @@ const PositionTree: React.FC<PositionTreeProps> = ({
   isLoading,
   onSelectNode,
 }) => {
+  console.log("The position", positions);
   const transformNodes = (nodes: OrganizationNode[]): TreeNode[] => {
     return (
       nodes &&

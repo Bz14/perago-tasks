@@ -18,30 +18,45 @@ import { notifications } from "@mantine/notifications";
 import { IconEdit, IconTrash, IconPlus } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import {
-  useUpdatePositionMutation,
-  useDeletePositionMutation,
-  useGetChoicesQuery,
-} from "@/app/redux/slices/positionSlice";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import positionApi from "@/app/api/api";
+
 interface PositionDetailProps {
   position: PositionNode | null;
-  onPositionDeleted: (id: string) => void;
 }
 
-const PositionDetail: React.FC<PositionDetailProps> = ({
-  position,
-  onPositionDeleted,
-}) => {
-  const [updatePosition, { isLoading: isUpdating }] =
-    useUpdatePositionMutation();
+const PositionDetail: React.FC<PositionDetailProps> = ({ position }) => {
+  const queryClient = useQueryClient();
 
-  const [deletePosition, { isLoading: isDeleting }] =
-    useDeletePositionMutation();
+  const updatePosition = useMutation({
+    mutationFn: (data: {
+      id: string;
+      name: string;
+      description: string;
+      parentId: string;
+    }) =>
+      position
+        ? positionApi.updatePosition(position.id, data)
+        : Promise.reject(new Error("Position is null")),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+    },
+  });
+
+  const deletePosition = useMutation({
+    mutationFn: (id: string) => positionApi.deletePositionById(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
+    },
+  });
 
   const [isEdit, setIsEdit] = useState(false);
-  const { data: choices } = useGetChoicesQuery(undefined, {
-    skip: !isEdit,
+  const { data: choices } = useQuery({
+    queryKey: ["choices"],
+    queryFn: positionApi.getChoices,
+    enabled: isEdit,
   });
+
   const [data, setData] = useState({ name: "", description: "", parentId: "" });
 
   const [modalOpened, { open: openModal, close: closeModal }] =
@@ -61,7 +76,12 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
     if (!position) return;
 
     try {
-      await updatePosition({ id: position?.id ?? "", ...data }).unwrap();
+      updatePosition.mutate({
+        id: position.id,
+        name: data.name,
+        description: data.description,
+        parentId: data.parentId,
+      });
       notifications.show({
         title: "Success",
         message: "Position updated successfully!",
@@ -87,8 +107,7 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
   const handleDelete = async () => {
     if (!position) return;
     try {
-      // await deletePosition(position.id).unwrap();
-      onPositionDeleted(position.id);
+      deletePosition.mutate(position.id ?? "");
       closeModal();
       notifications.show({
         title: "Success",
@@ -199,9 +218,9 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
             }
             className="mt-6 bg-customBlue text-white"
             onClick={isEdit ? handleSave : () => setIsEdit(true)}
-            disabled={isUpdating}
+            disabled={updatePosition.isPending}
           >
-            {isUpdating ? (
+            {updatePosition ? (
               <Loader size="sm" color="white" />
             ) : isEdit ? (
               "Save"
@@ -214,9 +233,13 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
             variant="outline"
             className="mt-6 outline-2 outline-customBlue text-customBlue"
             onClick={openModal}
-            disabled={isDeleting}
+            disabled={deletePosition.isPending}
           >
-            {isDeleting ? <Loader size="sm" color="red" /> : "Delete"}
+            {deletePosition.isPending ? (
+              <Loader size="sm" color="red" />
+            ) : (
+              "Delete"
+            )}
           </Button>
         </div>
 
@@ -235,8 +258,16 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
             <Button variant="outline" color="red" onClick={closeModal}>
               Cancel
             </Button>
-            <Button color="red" onClick={handleDelete} disabled={isDeleting}>
-              {isDeleting ? <Loader size="sm" color="white" /> : "Delete"}
+            <Button
+              color="red"
+              onClick={handleDelete}
+              disabled={deletePosition.isPending}
+            >
+              {deletePosition.isPending ? (
+                <Loader size="sm" color="white" />
+              ) : (
+                "Delete"
+              )}
             </Button>
           </div>
         </Modal>
