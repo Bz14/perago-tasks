@@ -1,6 +1,5 @@
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
-
 import positionCommandService from "../services/positions-commands.js";
 import positionQueryService from "../services/positions-queries.js";
 import type { PositionControllerInterface } from "../domain/interfaces/position-interface.js";

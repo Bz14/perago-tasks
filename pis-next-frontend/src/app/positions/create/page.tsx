@@ -1,5 +1,4 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -13,7 +12,6 @@ import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import positionApi from "@/app/api/api";
 
 import checkAdmin from "@/app/utils/checkAdmin";
-
 import { FormData } from "@/app/interfaces/interface";
 
 const schema = z.object({
@@ -68,7 +66,7 @@ const CreatePosition = () => {
         title: "Failure",
         message: error ? error.message : "An error occurred",
         color: "red",
-        autoClose: 1000,
+        autoClose: 2000,
         withCloseButton: true,
         position: "top-right",
       });
@@ -77,7 +75,11 @@ const CreatePosition = () => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["choices"] });
       queryClient.invalidateQueries({ queryKey: ["positions"] });
-      reset();
+      reset({
+        name: "",
+        description: "",
+        parentId: "",
+      });
     },
   });
 
