@@ -42,7 +42,6 @@ const UpdatePosition = async (c: Context): Promise<Response> => {
       message: "Position updated successfully.",
     });
   } catch (error: Error | any) {
-    console.log(error);
     throw new HTTPException(error.status, { message: error.message });
   }
 };

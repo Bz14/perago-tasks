@@ -2,7 +2,10 @@ import bcrypt from "bcrypt";
 import adminRepository from "../repositories/admin-repository.js";
 import type { AdminQueryServiceInterface } from "../domain/interfaces/admin-interface.js";
 
-const GetAdmin = async (username: string, password: string) => {
+const GetAdmin = async (
+  username: string,
+  password: string
+): Promise<{ username: string; id: string }> => {
   try {
     const [admin]: any = await adminRepository.GetAdmin(username);
     if (!admin) {
@@ -16,7 +19,7 @@ const GetAdmin = async (username: string, password: string) => {
 
     return {
       id: admin.id,
-      userName: admin.username,
+      username: admin.username,
     };
   } catch (error: Error | any) {
     throw new Error(error.message);

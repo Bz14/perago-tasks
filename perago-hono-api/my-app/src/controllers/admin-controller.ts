@@ -19,7 +19,6 @@ const CreateAdmin = async (c: Context): Promise<Response> => {
       201
     );
   } catch (error: Error | any) {
-    console.log(error.message);
     return c.json({ error: error.message }, 500);
   }
 };
@@ -35,7 +34,6 @@ const GetAdmin = async (c: Context): Promise<Response> => {
 
     return c.json({ data: user, message: "Admin detail fetched" });
   } catch (error: Error | any) {
-    console.log(error);
     return c.json({ error: error.message }, 500);
   }
 };

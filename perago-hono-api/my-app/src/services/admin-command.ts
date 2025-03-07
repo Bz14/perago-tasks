@@ -7,7 +7,10 @@ import adminRepository from "../repositories/admin-repository.js";
 
 import bcrypt from "bcrypt";
 
-const CreateAdmin = async (userName: string, password: string) => {
+const CreateAdmin = async (
+  userName: string,
+  password: string
+): Promise<{ username: string; id: string }> => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser: any = await adminRepository.CreateAdmin(
