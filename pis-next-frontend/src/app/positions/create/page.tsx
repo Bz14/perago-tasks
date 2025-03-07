@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useForm, FieldErrors } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { notifications } from "@mantine/notifications";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -35,6 +35,17 @@ const CreatePosition = () => {
       router.push("/admin/login");
     }
   }, []);
+  const form = useForm({
+    defaultValues: {
+      name: "",
+      description: "",
+      parentId: "",
+    },
+    mode: "onBlur",
+    resolver: zodResolver(schema),
+  });
+  const { register, handleSubmit, formState, reset, setValue } = form;
+  const { errors, isSubmitting } = formState;
 
   const createPosition = useMutation({
     mutationFn: (data: {
@@ -49,7 +60,7 @@ const CreatePosition = () => {
         color: "green",
         autoClose: 1000,
         withCloseButton: true,
-        position: "top-center",
+        position: "top-right",
       });
     },
     onError: (error: Error) => {
@@ -59,7 +70,7 @@ const CreatePosition = () => {
         color: "red",
         autoClose: 1000,
         withCloseButton: true,
-        position: "top-center",
+        position: "top-right",
       });
     },
 
@@ -74,23 +85,6 @@ const CreatePosition = () => {
     queryKey: ["choices"],
     queryFn: positionApi.getChoices,
   });
-
-  const form = useForm({
-    defaultValues: {
-      name: "",
-      description: "",
-      parentId: "",
-    },
-    mode: "all",
-    resolver: zodResolver(schema),
-  });
-  const { register, handleSubmit, formState, reset, setValue } = form;
-  const { errors, isSubmitting } = formState;
-
-  const onError = (errors: FieldErrors) => {
-    reset();
-    console.log(errors);
-  };
 
   const onSubmit = async (data: FormData) => {
     createPosition.mutate(data);
@@ -111,7 +105,7 @@ const CreatePosition = () => {
         <h2 className="text-xl font-bold text-center text-customBlue">
           Create New Position
         </h2>
-        <form onSubmit={handleSubmit(onSubmit, onError)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <TextInput
               label="Position Title"

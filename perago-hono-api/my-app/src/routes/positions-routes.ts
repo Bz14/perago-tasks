@@ -1,17 +1,13 @@
 import { Hono } from "hono";
 import positionsController from "../controllers/positions-controller.js";
 
-const positionsRoute = new Hono({ strict: false });
-
-positionsRoute.get("/positions", positionsController.GetAllPositions);
-positionsRoute.get("/position/choices", positionsController.GetPositionChoices);
-positionsRoute.get("/position/:id", positionsController.GetPositionById);
-positionsRoute.get(
-  "/position/children/:id",
-  positionsController.GetPositionChildren
-);
-positionsRoute.post("/position", positionsController.CreatePosition);
-positionsRoute.put("/position/:id", positionsController.UpdatePosition);
-positionsRoute.delete("/position/:id", positionsController.DeletePosition);
+const positionsRoute = new Hono({ strict: false })
+  .get("/positions", positionsController.GetAllPositions)
+  .get("/position/choices", positionsController.GetPositionChoices)
+  .get("/position/:id", positionsController.GetPositionById)
+  .get("/position/children/:id", positionsController.GetPositionChildren)
+  .post("/position", positionsController.CreatePosition)
+  .put("/position/:id", positionsController.UpdatePosition)
+  .delete("/position/:id", positionsController.DeletePosition);
 
 export default positionsRoute;

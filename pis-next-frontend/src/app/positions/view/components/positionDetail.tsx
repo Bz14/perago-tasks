@@ -1,3 +1,7 @@
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 import { PositionNode } from "@/app/interfaces/interface";
 import {
   Card,
@@ -20,6 +24,19 @@ import { useDisclosure } from "@mantine/hooks";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import positionApi from "@/app/api/api";
 
+const schema = z.object({
+  name: z.string().nonempty({ message: "Title is required" }).min(2, {
+    message: "Title must be at least 2 characters",
+  }),
+  description: z
+    .string()
+    .nonempty({ message: "Description is required" })
+    .min(10, {
+      message: "Description must be at least 10 characters",
+    }),
+  parentId: z.string().optional(),
+});
+
 interface PositionDetailProps {
   position: PositionNode | null;
   onPositionDeleted: () => void;
@@ -30,6 +47,19 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
   onPositionDeleted,
 }) => {
   const queryClient = useQueryClient();
+
+  const { control, handleSubmit, formState, setValue, reset } = useForm({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      name: "",
+      description: "",
+      parentId: "",
+    },
+    mode: "onBlur",
+  });
+
+  const { errors } = formState;
+  const [isEdit, setIsEdit] = useState(false);
 
   const updatePosition = useMutation({
     mutationFn: (data: {
@@ -42,76 +72,57 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
         ? positionApi.updatePosition(position.id, data)
         : Promise.reject(new Error("Position is null")),
 
-    onMutate: async (newData) => {
-      await queryClient.cancelQueries({ queryKey: ["position", position?.id] });
-
-      const previousData = queryClient.getQueryData(["position", position?.id]);
-
-      queryClient.setQueryData(
-        ["position", position?.id],
-        (oldData: PositionNode | undefined) => ({
-          ...oldData,
-          ...newData,
-        })
-      );
-
-      return { previousData };
-    },
-
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["positions"] });
-      queryClient.invalidateQueries({ queryKey: ["position", position?.id] });
+      queryClient.setQueriesData(
+        { queryKey: ["position", variables?.id] },
+        data
+      );
       notifications.show({
         title: "Success",
         message: "Position updated successfully!",
         color: "green",
         autoClose: 1000,
         withCloseButton: true,
-        position: "top-center",
+        position: "top-right",
       });
     },
 
-    onError: (error: Error, _variables, context) => {
-      queryClient.setQueryData(
-        ["position", position?.id],
-        context?.previousData
-      );
+    onError: (error: Error) => {
       notifications.show({
         title: "Failure",
         message: error ? error.message : "An error occurred",
         color: "red",
         autoClose: 1000,
         withCloseButton: true,
-        position: "top-center",
+        position: "top-right",
       });
     },
 
     onSettled: () => {
       setIsEdit(false);
-      setData({ ...data, parentId: "" });
+      reset();
     },
   });
 
   const deletePosition = useMutation({
     mutationFn: (id: string) => positionApi.deletePositionById(id),
 
-    onMutate: () => {
-      queryClient.cancelQueries({ queryKey: ["position", position?.id] });
+    onSuccess: (data, variables) => {
+      queryClient.setQueriesData({ queryKey: ["position", variables] }, data);
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
 
-      const previousData = queryClient.getQueryData(["positions"]);
-
-      queryClient.setQueryData(["positions"], (oldData: PositionNode[]) =>
-        oldData.filter((pos) => pos.id !== position?.id)
-      );
-
-      return { previousData };
+      notifications.show({
+        title: "Success",
+        message: "Position deleted successfully!",
+        color: "green",
+        autoClose: 1000,
+        withCloseButton: true,
+        position: "top-right",
+      });
     },
 
-    onError: (error: Error, _variables, context) => {
-      queryClient.setQueryData(
-        ["position", position?.id],
-        context?.previousData
-      );
+    onError: (error: Error) => {
       queryClient.invalidateQueries({ queryKey: ["positions"] });
       notifications.show({
         title: "Failure",
@@ -119,18 +130,7 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
         color: "red",
         autoClose: 1000,
         withCloseButton: true,
-        position: "top-center",
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["positions"] });
-      notifications.show({
-        title: "Success",
-        message: "Position deleted successfully!",
-        color: "green",
-        autoClose: 1000,
-        withCloseButton: true,
-        position: "top-center",
+        position: "top-right",
       });
     },
 
@@ -139,35 +139,34 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
     },
   });
 
-  const [isEdit, setIsEdit] = useState(false);
   const { data: choices } = useQuery({
     queryKey: ["choices"],
     queryFn: positionApi.getChoices,
     enabled: isEdit,
   });
 
-  const [data, setData] = useState({ name: "", description: "", parentId: "" });
-
   const [modalOpened, { open: openModal, close: closeModal }] =
     useDisclosure(false);
 
   useEffect(() => {
     if (position) {
-      setData({
-        name: position.name,
-        description: position.description,
-        parentId: position.parentId ?? "",
-      });
+      setValue("name", position.name);
+      setValue("description", position.description);
+      setValue("parentId", position.parentId ?? "");
     }
-  }, [position]);
+  }, [position, setValue]);
 
-  const handleSave = async () => {
+  const handleSave = async (data: {
+    name: string;
+    description: string;
+    parentId?: string;
+  }) => {
     if (!position) return;
     updatePosition.mutate({
       id: position.id,
       name: data.name,
       description: data.description,
-      parentId: data.parentId,
+      parentId: data.parentId ?? "",
     });
   };
 
@@ -198,10 +197,16 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
           </Avatar>
           <div>
             {isEdit ? (
-              <TextInput
-                value={data.name}
-                onChange={(e) => setData({ ...data, name: e.target.value })}
-                className="text-2xl font-bold text-customBlue"
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <TextInput
+                    {...field}
+                    className="text-2xl font-bold text-customBlue"
+                    error={errors.name?.message}
+                  />
+                )}
               />
             ) : (
               <Text className="text-2xl font-bold text-customBlue">
@@ -214,9 +219,16 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
         <Divider className="my-4" />
 
         {isEdit ? (
-          <Textarea
-            value={data.description}
-            onChange={(e) => setData({ ...data, description: e.target.value })}
+          <Controller
+            name="description"
+            control={control}
+            render={({ field }) => (
+              <Textarea
+                {...field}
+                className="text-customBlue"
+                error={errors.description?.message}
+              />
+            )}
           />
         ) : (
           <Text className="text-customBlue">{position.description}</Text>
@@ -224,17 +236,23 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
 
         {isEdit && (
           <div className="mt-2">
-            <Select
-              label="Parent Position"
-              placeholder="Select parent position"
-              data={choices && choices.length > 0 ? choices : []}
-              onChange={(value) => setData({ ...data, parentId: value ?? "" })}
-              classNames={{
-                input:
-                  "border-gray-300 p-3 rounded-lg focus:ring-customBlue w-full outline-none",
-                label: "text-gray-800",
-                error: "ml-2 text-red-500",
-              }}
+            <Controller
+              name="parentId"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  label="Parent Position"
+                  placeholder="Select parent position"
+                  data={choices && choices.length > 0 ? choices : []}
+                  classNames={{
+                    input:
+                      "border-gray-300 p-3 rounded-lg focus:ring-customBlue w-full outline-none",
+                    label: "text-gray-800",
+                    error: "ml-2 text-red-500",
+                  }}
+                />
+              )}
             />
           </div>
         )}
@@ -246,16 +264,15 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
               Team Members
             </Text>
             <div className="mt-2 flex flex-wrap gap-2">
-              {position &&
-                position.children.map((member) => (
-                  <Badge
-                    key={member.id}
-                    className="text-white bg-customBlue"
-                    size="md"
-                  >
-                    {member.name}
-                  </Badge>
-                ))}
+              {position.children.map((member) => (
+                <Badge
+                  key={member.id}
+                  className="text-white bg-customBlue"
+                  size="md"
+                >
+                  {member.name}
+                </Badge>
+              ))}
             </div>
           </>
         )}
@@ -266,7 +283,7 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
               isEdit ? <IconPlus size={18} /> : <IconEdit size={18} />
             }
             className="mt-6 bg-customBlue text-white"
-            onClick={isEdit ? handleSave : () => setIsEdit(true)}
+            onClick={isEdit ? handleSubmit(handleSave) : () => setIsEdit(true)}
             disabled={updatePosition.isPending}
           >
             {updatePosition.isPending ? (
