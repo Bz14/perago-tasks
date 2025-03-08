@@ -97,6 +97,30 @@ const deletePositionById = async (id: string | null): Promise<Position> => {
   }
 };
 
+const getPositionList = async (
+  page: number
+): Promise<{
+  positions: { id: string; name: string }[];
+  pagination: {
+    totalPages: number;
+    currentPage: number;
+    nextPage: number | null;
+    prevPage: number | null;
+  };
+}> => {
+  try {
+    const response = await axios.get(
+      `${URL}/positions/list?page=${page}&limit=4`
+    );
+    return response.data.data;
+  } catch (error: Error | unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || error.message);
+    }
+    throw new Error("An unknown error occurred");
+  }
+};
+
 const login = async (
   data: LoginFormData
 ): Promise<{ id: string; userName: string }> => {
@@ -119,6 +143,7 @@ const positionApi = {
   getPositionById,
   updatePosition,
   deletePositionById,
+  getPositionList,
   login,
 };
 

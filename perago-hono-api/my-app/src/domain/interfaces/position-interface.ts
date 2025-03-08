@@ -10,6 +10,10 @@ interface PositionRepositoryInterface {
   CheckNullParentPosition: () => Promise<{ id: string }>;
   GetChildrenPosition: (id: string) => Promise<{ id: string; name: string }[]>;
   GetAllPositions: () => Promise<Position[]>;
+  GetPositionsList: (
+    page: number,
+    limit: number
+  ) => Promise<{ id: string; name: string }[]>;
 
   UpdatePosition: (
     id: string,
@@ -52,6 +56,10 @@ interface PositionQueryServiceInterface {
   GetChildrenPositions: (id: string) => Promise<{ id: string; name: string }[]>;
   GetAllPositions: () => Promise<TreeNode[]>;
   GetPositionChoices: () => {};
+  GetPositionsList: (
+    page: string,
+    limit: string
+  ) => Promise<{ id: string; name: string }[]>;
 }
 
 interface PositionControllerInterface {
@@ -62,6 +70,7 @@ interface PositionControllerInterface {
   GetPositionChildren: (c: Context) => Promise<Response>;
   GetAllPositions: (c: Context) => Promise<Response>;
   GetPositionChoices: (c: Context) => Promise<Response>;
+  GetPositionsList: (c: Context) => Promise<Response>;
 }
 
 export type Position = {

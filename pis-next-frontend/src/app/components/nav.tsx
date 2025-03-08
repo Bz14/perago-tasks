@@ -24,6 +24,11 @@ const Navbar = () => {
               View
             </Link>
           )}
+          {admin && (
+            <Link href="/positions/list" className="hover:text-gray-400">
+              List
+            </Link>
+          )}
 
           <Link href="/about" className="hover:text-gray-400">
             About

@@ -98,7 +98,21 @@ const GetPositionChoices = async (c: Context): Promise<Response> => {
     }
     return c.json({ data: positions, message: "Position choices fetched" });
   } catch (error: Error | any) {
-    return c.json({ error: error.message }, 500);
+    throw new HTTPException(error.status, { message: error.message });
+  }
+};
+
+const GetPositionsList = async (c: Context): Promise<Response> => {
+  try {
+    const page = c.req.query("page") || "1";
+    const limit = c.req.query("limit") || "4";
+    const positions = await positionQueryService.GetPositionsList(page, limit);
+    return c.json({
+      data: positions,
+      message: "Positions list fetched",
+    });
+  } catch (error: Error | any) {
+    throw new HTTPException(error.status, { message: error.message });
   }
 };
 
@@ -110,6 +124,7 @@ const positionController: PositionControllerInterface = {
   GetPositionChildren,
   GetAllPositions,
   GetPositionChoices,
+  GetPositionsList,
 };
 
 export default positionController;

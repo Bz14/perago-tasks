@@ -1,4 +1,4 @@
-import { eq, isNull } from "drizzle-orm";
+import { eq, isNull, count } from "drizzle-orm";
 import { db } from "../config/db.js";
 import { positions } from "../models/schema.js";
 import type {
@@ -100,6 +100,17 @@ const GetPositionsByParentId = async (parentId: string) => {
     .where(eq(positions.parentId, parentId));
 };
 
+const GetPositionsList = async (
+  page: number,
+  limit: number
+): Promise<{ id: string; name: string }[]> => {
+  return await db
+    .select({ id: positions.id, name: positions.name })
+    .from(positions)
+    .limit(limit)
+    .offset((page - 1) * limit);
+};
+
 const positionRepository: PositionRepositoryInterface = {
   GetPositionById,
   CreatePosition,
@@ -109,6 +120,7 @@ const positionRepository: PositionRepositoryInterface = {
   UpdatePosition,
   DeletePositionById,
   GetPositionsByParentId,
+  GetPositionsList,
 };
 
 export default positionRepository;

@@ -77,11 +77,32 @@ const GetPositionChoices = async () => {
   }
 };
 
+const GetPositionsList = async (
+  page: string,
+  limit: string
+): Promise<{ id: string; name: string }[]> => {
+  try {
+    const currentPage = parseInt(page);
+    const queryLimit = parseInt(limit);
+    const positions = await positionRepository.GetPositionsList(
+      currentPage,
+      queryLimit
+    );
+    if (!positions) {
+      throw new HTTPException(404, { message: "Positions not found" });
+    }
+    return positions;
+  } catch (error: Error | any) {
+    throw new HTTPException(error.status, { message: error.message });
+  }
+};
+
 const positionQueryService: PositionQueryServiceInterface = {
   GetPositionById,
   GetChildrenPositions,
   GetAllPositions,
   GetPositionChoices,
+  GetPositionsList,
 };
 
 export default positionQueryService;

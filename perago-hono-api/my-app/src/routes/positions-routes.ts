@@ -5,6 +5,7 @@ import { zValidator } from "@hono/zod-validator";
 import schema from "../utils/validatorSchema.js";
 
 const positionsRoute = new Hono({ strict: false })
+  .get("/positions/list", positionsController.GetPositionsList)
   .get("/positions", positionsController.GetAllPositions)
   .get("/position/choices", positionsController.GetPositionChoices)
   .get("/position/:id", positionsController.GetPositionById)
