@@ -98,19 +98,12 @@ const deletePositionById = async (id: string | null): Promise<Position> => {
 };
 
 const getPositionList = async (
-  page: number
-): Promise<{
-  positions: { id: string; name: string }[];
-  pagination: {
-    totalPages: number;
-    currentPage: number;
-    nextPage: number | null;
-    prevPage: number | null;
-  };
-}> => {
+  page: number,
+  limit: number
+): Promise<{ id: string; name: string }[]> => {
   try {
     const response = await axios.get(
-      `${URL}/positions/list?page=${page}&limit=4`
+      `${URL}/positions/list?page=${page}&limit=${limit}`
     );
     return response.data.data;
   } catch (error: Error | unknown) {
