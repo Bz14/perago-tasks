@@ -14,7 +14,9 @@ const positionsRoute = new Hono({ strict: false })
     "/position",
     zValidator("json", schema, (result, c) => {
       if (!result.success) {
-        throw new HTTPException(400, { message: result.error.message });
+        throw new HTTPException(400, {
+          message: result.error.errors[0].message,
+        });
       }
     }),
     positionsController.CreatePosition
@@ -23,7 +25,9 @@ const positionsRoute = new Hono({ strict: false })
     "/position/:id",
     zValidator("json", schema, (result, c) => {
       if (!result.success) {
-        throw new HTTPException(400, { message: result.error.message });
+        throw new HTTPException(400, {
+          message: result.error.errors[0].message,
+        });
       }
     }),
     positionsController.UpdatePosition

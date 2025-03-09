@@ -73,7 +73,6 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
         : Promise.reject(new Error("Position is null")),
 
     onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ["positions"] });
       queryClient.setQueriesData(
         { queryKey: ["position", variables?.id] },
         data

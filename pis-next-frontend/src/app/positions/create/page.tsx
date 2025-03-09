@@ -88,7 +88,7 @@ const CreatePosition = () => {
     queryFn: positionApi.getChoices,
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = (data: FormData) => {
     createPosition.mutate(data);
   };
 
