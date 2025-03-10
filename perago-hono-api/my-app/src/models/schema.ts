@@ -10,7 +10,7 @@ export const positions = pgTable("positions", {
 
 export const admin = pgTable("admin", {
   id: uuid().primaryKey().defaultRandom(),
-  username: varchar({ length: 255 }).notNull().unique(),
+  email: varchar({ length: 255 }).notNull().unique(),
   password: varchar({ length: 255 }).notNull(),
   createdAt: timestamp().notNull().defaultNow(),
 });

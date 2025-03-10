@@ -2,14 +2,12 @@ import type { Context } from "hono";
 import type { AdminControllerInterface } from "../domain/interfaces/admin-interface.js";
 import adminCommandService from "../services/admin-command.js";
 import adminQueryService from "../services/admin-queries.js";
+import { HTTPException } from "hono/http-exception";
 
 const CreateAdmin = async (c: Context): Promise<Response> => {
   try {
-    const { userName, password } = await c.req.json();
-    const result: any = await adminCommandService.CreateAdmin(
-      userName,
-      password
-    );
+    const { email, password } = await c.req.json();
+    const result: any = await adminCommandService.CreateAdmin(email, password);
 
     return c.json(
       {
@@ -19,28 +17,26 @@ const CreateAdmin = async (c: Context): Promise<Response> => {
       201
     );
   } catch (error: Error | any) {
-    return c.json({ error: error.message }, 500);
+    throw new HTTPException(error.status, { message: error.message });
   }
 };
 
-const GetAdmin = async (c: Context): Promise<Response> => {
+const LoginAdmin = async (c: Context): Promise<Response> => {
   try {
-    const { username, password } = await c.req.json();
-
-    const user = await adminQueryService.GetAdmin(username, password);
-    if (!user) {
-      throw new Error("Admin not found");
-    }
-
-    return c.json({ data: user, message: "Admin detail fetched" });
+    const { email, password } = await c.req.json();
+    const result = await adminQueryService.LoginAdmin(email, password);
+    return c.json({
+      data: result,
+      message: "Admin logged in successfully.",
+    });
   } catch (error: Error | any) {
-    return c.json({ error: error.message }, 500);
+    throw new HTTPException(error.status, { message: error.message });
   }
 };
 
 const adminController: AdminControllerInterface = {
   CreateAdmin,
-  GetAdmin,
+  LoginAdmin,
 };
 
 export default adminController;

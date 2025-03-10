@@ -3,31 +3,31 @@ import { db } from "../config/db.js";
 import { admin } from "../models/schema.js";
 import type { AdminRepositoryInterface } from "../domain/interfaces/admin-interface.js";
 
-const GetAdmin = async (
-  username: string
-): Promise<{ username: string; id: string }> => {
-  const [newAdmin] = await db
-    .select({ username: admin.username, id: admin.id })
-    .from(admin)
-    .where(eq(admin.username, username));
-  return newAdmin;
-};
-
-const CreateAdmin = async (
-  userName: string,
+const createAdmin = async (
+  email: string,
   password: string
-): Promise<{ username: string; id: string }> => {
+): Promise<{ email: string; id: string }> => {
   const [newAdmin] = await db
 
     .insert(admin)
-    .values({ username: userName, password })
-    .returning({ username: admin.username, id: admin.id });
+    .values({ email, password })
+    .returning({ email: admin.email, id: admin.id });
+  return newAdmin;
+};
+
+const getAdminByEmail = async (
+  email: string
+): Promise<{ id: string; email: string; password: string }> => {
+  const [newAdmin] = await db
+    .select({ id: admin.id, email: admin.email, password: admin.password })
+    .from(admin)
+    .where(eq(admin.email, email));
   return newAdmin;
 };
 
 const adminRepository: AdminRepositoryInterface = {
-  GetAdmin,
-  CreateAdmin,
+  createAdmin,
+  getAdminByEmail,
 };
 
 export default adminRepository;

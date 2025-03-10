@@ -43,6 +43,13 @@
       "when": 1740723651229,
       "tag": "0005_slimy_snowbird",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1741589580578,
+      "tag": "0006_numerous_havok",
+      "breakpoints": true
     }
   ]
 }

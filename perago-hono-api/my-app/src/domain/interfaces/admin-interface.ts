@@ -1,29 +1,31 @@
 import type { Context } from "hono";
 interface AdminRepositoryInterface {
-  GetAdmin: (userName: string) => Promise<{ username: string; id: string }>;
-  CreateAdmin: (
-    userName: string,
+  createAdmin: (
+    email: string,
     password: string
-  ) => Promise<{ username: string; id: string }>;
+  ) => Promise<{ email: string; id: string }>;
+  getAdminByEmail: (
+    email: string
+  ) => Promise<{ id: string; email: string; password: string }>;
 }
 
 interface AdminCommandServiceInterface {
   CreateAdmin: (
-    userName: string,
+    email: string,
     password: string
-  ) => Promise<{ username: string; id: string }>;
+  ) => Promise<{ email: string; id: string }>;
 }
 
 interface AdminQueryServiceInterface {
-  GetAdmin: (
-    userName: string,
+  LoginAdmin: (
+    email: string,
     password: string
-  ) => Promise<{ username: string; id: string }>;
+  ) => Promise<{ accessToken: string; email: string; id: string }>;
 }
 
 interface AdminControllerInterface {
   CreateAdmin: (c: Context) => Promise<Response>;
-  GetAdmin: (c: Context) => Promise<Response>;
+  LoginAdmin: (c: Context) => Promise<Response>;
 }
 
 export type {
