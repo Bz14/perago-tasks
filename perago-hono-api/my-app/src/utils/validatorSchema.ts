@@ -13,4 +13,11 @@ const schema = z.object({
   parentId: z.string().optional(),
 });
 
+export const adminSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters" }),
+});
+
 export default schema;

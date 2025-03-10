@@ -1,13 +1,15 @@
 import bcrypt from "bcrypt";
-import adminRepository from "../repositories/admin-repository.js";
-import type { AdminQueryServiceInterface } from "../domain/interfaces/admin-interface.js";
 import { HTTPException } from "hono/http-exception";
 import { sign } from "hono/jwt";
+
+import adminRepository from "../repositories/admin-repository.js";
+import type { AdminQueryServiceInterface } from "../domain/interfaces/admin-interface.js";
+import config from "../config/config.js";
 
 const LoginAdmin = async (
   email: string,
   password: string
-): Promise<{ accessToken: string; email: string; id: string }> => {
+): Promise<{ accessToken: string }> => {
   try {
     const admin = await adminRepository.getAdminByEmail(email);
     if (!admin) {
@@ -17,11 +19,12 @@ const LoginAdmin = async (
     if (!match) {
       throw new HTTPException(401, { message: "Invalid credentials." });
     }
-    if (!process.env.JWT_SECRET) {
-      throw new HTTPException(500, { message: "JWT_SECRET is not defined." });
-    }
-    const token = await sign({ id: admin.id }, process.env.JWT_SECRET);
-    return { accessToken: token, email: admin.email, id: admin.id };
+
+    const token = await sign(
+      { id: admin.id, exp: Math.floor(Date.now() / 1000) + 60 * 100 },
+      config.JWTSecret
+    );
+    return { accessToken: token };
   } catch (error: Error | any) {
     throw new HTTPException(error.status, { message: error.message });
   }

@@ -20,7 +20,7 @@ interface AdminQueryServiceInterface {
   LoginAdmin: (
     email: string,
     password: string
-  ) => Promise<{ accessToken: string; email: string; id: string }>;
+  ) => Promise<{ accessToken: string }>;
 }
 
 interface AdminControllerInterface {

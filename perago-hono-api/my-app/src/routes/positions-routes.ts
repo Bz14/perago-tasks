@@ -3,8 +3,10 @@ import { HTTPException } from "hono/http-exception";
 import positionsController from "../controllers/positions-controller.js";
 import { zValidator } from "@hono/zod-validator";
 import schema from "../utils/validatorSchema.js";
+import AuthMiddleware from "../middlewares/authMiddleware.js";
 
 const positionsRoute = new Hono({ strict: false })
+  .use(AuthMiddleware)
   .get("/positions/list", positionsController.GetPositionsList)
   .get("/positions", positionsController.GetAllPositions)
   .get("/position/choices", positionsController.GetPositionChoices)
