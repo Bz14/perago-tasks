@@ -114,11 +114,24 @@ const getPositionList = async (
   }
 };
 
-const login = async (
-  data: LoginFormData
-): Promise<{ id: string; userName: string }> => {
+const login = async (data: LoginFormData): Promise<{ accessToken: string }> => {
   try {
-    const response = await axios.post(`${URL}/auth`, data);
+    const response = await axios.post(`${URL}/auth/login`, data);
+    return response.data.data;
+  } catch (error: Error | unknown) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw new Error(error.response.data.message || error.message);
+    }
+
+    throw new Error("An unknown error occurred");
+  }
+};
+
+const signup = async (
+  data: LoginFormData
+): Promise<{ id: string; email: string }> => {
+  try {
+    const response = await axios.post(`${URL}/auth/signup`, data);
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
@@ -138,6 +151,7 @@ const positionApi = {
   deletePositionById,
   getPositionList,
   login,
+  signup,
 };
 
 export default positionApi;

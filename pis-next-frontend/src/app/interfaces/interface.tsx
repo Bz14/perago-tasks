@@ -36,6 +36,6 @@ export type TreeNode = {
 };
 
 export type LoginFormData = {
-  username: string;
+  email: string;
   password: string;
 };

@@ -6,7 +6,7 @@ import { adminSchema } from "../utils/validatorSchema.js";
 
 const adminRoute = new Hono({ strict: false })
   .post(
-    "/auth/signup",
+    "/auth/login",
     zValidator("json", adminSchema, (result, c) => {
       if (!result.success) {
         throw new HTTPException(400, {
@@ -14,7 +14,7 @@ const adminRoute = new Hono({ strict: false })
         });
       }
     }),
-    adminController.CreateAdmin
+    adminController.LoginAdmin
   )
   .post("/auth/login", adminController.LoginAdmin);
 
