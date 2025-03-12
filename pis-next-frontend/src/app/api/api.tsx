@@ -14,7 +14,12 @@ const createPosition = async (data: {
   parentId: string;
 }): Promise<Position> => {
   try {
-    const response = await axios.post(`${URL}/position`, data);
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.post(`${URL}/position`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
@@ -27,7 +32,12 @@ const createPosition = async (data: {
 
 const getChoices = async (): Promise<{ value: string; label: string }[]> => {
   try {
-    const response = await axios.get(`${URL}/position/choices`);
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.get(`${URL}/position/choices`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
@@ -40,7 +50,12 @@ const getChoices = async (): Promise<{ value: string; label: string }[]> => {
 
 const getPositions = async (): Promise<OrganizationNode[]> => {
   try {
-    const response = await axios.get(`${URL}/positions`);
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.get(`${URL}/positions`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
@@ -53,7 +68,12 @@ const getPositions = async (): Promise<OrganizationNode[]> => {
 
 const getPositionById = async (id: string | null): Promise<PositionNode> => {
   try {
-    const response = await axios.get(`${URL}/position/${id}`);
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.get(`${URL}/position/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
@@ -69,11 +89,20 @@ const updatePosition = async (
   data: { name: string; description: string; parentId: string }
 ): Promise<Position> => {
   try {
-    const response = await axios.put(`${URL}/position/${id}`, {
-      name: data.name,
-      description: data.description,
-      parentId: data.parentId,
-    });
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.put(
+      `${URL}/position/${id}`,
+      {
+        name: data.name,
+        description: data.description,
+        parentId: data.parentId,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
@@ -86,7 +115,12 @@ const updatePosition = async (
 
 const deletePositionById = async (id: string | null): Promise<Position> => {
   try {
-    const response = await axios.delete(`${URL}/position/${id}`);
+    const token = localStorage.getItem("accessToken");
+    const response = await axios.delete(`${URL}/position/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data.data;
   } catch (error: Error | unknown) {
     if (axios.isAxiosError(error) && error.response) {
@@ -102,8 +136,14 @@ const getPositionList = async (
   limit: number
 ): Promise<{ id: string; name: string }[]> => {
   try {
+    const token = localStorage.getItem("accessToken");
     const response = await axios.get(
-      `${URL}/positions/list?page=${page}&limit=${limit}`
+      `${URL}/positions/list?page=${page}&limit=${limit}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.data.data;
   } catch (error: Error | unknown) {

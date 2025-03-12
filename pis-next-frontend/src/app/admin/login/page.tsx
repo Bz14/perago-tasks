@@ -38,7 +38,7 @@ const LoginPage = () => {
   const loginMutation = useMutation({
     mutationFn: (data: LoginFormData) => positionApi.login(data),
     onSuccess: (loginData) => {
-      localStorage.setItem("accessToken", JSON.stringify(loginData));
+      localStorage.setItem("accessToken", loginData.accessToken);
       notifications.show({
         title: "Success",
         message: "Login successful! Redirecting...",

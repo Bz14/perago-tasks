@@ -50,6 +50,13 @@
       "when": 1741589580578,
       "tag": "0006_numerous_havok",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1741600324756,
+      "tag": "0007_optimal_goblin_queen",
+      "breakpoints": true
     }
   ]
 }

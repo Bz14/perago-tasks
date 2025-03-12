@@ -7,7 +7,8 @@ import type {
 } from "../domain/interfaces/position-interface.js";
 
 const GetPositionById = async (
-  id: string
+  id: string,
+  userId: string
 ): Promise<{
   id: string;
   name: string;
@@ -16,11 +17,11 @@ const GetPositionById = async (
   children: { id: string; name: string }[];
 }> => {
   try {
-    const position = await positionRepository.GetPositionById(id);
+    const position = await positionRepository.GetPositionById(id, userId);
     if (!position) {
       throw new HTTPException(404, { message: "Position not found" });
     }
-    const children = await positionRepository.GetChildrenPosition(id);
+    const children = await positionRepository.GetChildrenPosition(id, userId);
     return {
       ...position,
       children: children,
@@ -31,14 +32,15 @@ const GetPositionById = async (
 };
 
 const GetChildrenPositions = async (
-  id: string
+  id: string,
+  userId: string
 ): Promise<{ id: string; name: string }[]> => {
   try {
-    const position = await positionRepository.GetPositionById(id);
+    const position = await positionRepository.GetPositionById(id, userId);
     if (!position) {
       throw new HTTPException(400, { message: "Position not found" });
     }
-    const children = await positionRepository.GetChildrenPosition(id);
+    const children = await positionRepository.GetChildrenPosition(id, userId);
     if (children.length === 0) {
       throw new HTTPException(400, { message: "Position has no children" });
     }
@@ -47,9 +49,9 @@ const GetChildrenPositions = async (
     throw new HTTPException(error.status, { message: error.message });
   }
 };
-const GetAllPositions = async (): Promise<TreeNode[]> => {
+const GetAllPositions = async (userId: string): Promise<TreeNode[]> => {
   try {
-    const positions = await positionRepository.GetAllPositions();
+    const positions = await positionRepository.GetAllPositions(userId);
     if (positions.length === 0) {
       throw new HTTPException(404, { message: "No positions found" });
     }
@@ -60,9 +62,9 @@ const GetAllPositions = async (): Promise<TreeNode[]> => {
   }
 };
 
-const GetPositionChoices = async () => {
+const GetPositionChoices = async (userId: string) => {
   try {
-    const positions: any = await positionRepository.GetAllPositions();
+    const positions = await positionRepository.GetAllPositions(userId);
     let choices = positions.map((position: any) => {
       return {
         value: position.id,
@@ -78,6 +80,7 @@ const GetPositionChoices = async () => {
 };
 
 const GetPositionsList = async (
+  userId: string,
   page: string,
   limit: string
 ): Promise<{ id: string; name: string }[]> => {
@@ -85,6 +88,7 @@ const GetPositionsList = async (
     const currentPage = parseInt(page);
     const queryLimit = parseInt(limit);
     const positions = await positionRepository.GetPositionsList(
+      userId,
       currentPage,
       queryLimit
     );

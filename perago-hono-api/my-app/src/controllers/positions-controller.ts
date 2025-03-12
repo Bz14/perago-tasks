@@ -7,7 +7,9 @@ import type { PositionControllerInterface } from "../domain/interfaces/position-
 const CreatePosition = async (c: Context): Promise<Response> => {
   try {
     const { name, description, parentId } = await c.req.json();
+    const user = c.req.user;
     const result = await positionCommandService.CreatePosition(
+      user.id,
       name,
       description,
       parentId
@@ -29,7 +31,9 @@ const UpdatePosition = async (c: Context): Promise<Response> => {
   try {
     const id = c.req.param("id");
     const { name, description, parentId } = await c.req.json();
+    const userId = c.req.user.id;
     const result = await positionCommandService.UpdatePosition(
+      userId,
       id,
       name,
       description,
@@ -48,7 +52,8 @@ const UpdatePosition = async (c: Context): Promise<Response> => {
 const DeletePosition = async (c: Context): Promise<Response> => {
   try {
     const id = c.req.param("id");
-    const position = await positionCommandService.DeletePosition(id);
+    const userId = c.req.user.id;
+    const position = await positionCommandService.DeletePosition(id, userId);
     return c.json({
       data: position,
       message: "Position deleted successfully",
@@ -61,7 +66,8 @@ const DeletePosition = async (c: Context): Promise<Response> => {
 const GetPositionById = async (c: Context): Promise<Response> => {
   try {
     const id = c.req.param("id");
-    const position = await positionQueryService.GetPositionById(id);
+    const userId = c.req.user.id;
+    const position = await positionQueryService.GetPositionById(id, userId);
     if (!position) {
       return c.json({ data: null, message: "Position not found" });
     }
@@ -74,7 +80,11 @@ const GetPositionById = async (c: Context): Promise<Response> => {
 const GetPositionChildren = async (c: Context): Promise<Response> => {
   try {
     const id = c.req.param("id");
-    const children: any = await positionQueryService.GetChildrenPositions(id);
+    const userId = c.req.user.id;
+    const children: any = await positionQueryService.GetChildrenPositions(
+      id,
+      userId
+    );
     return c.json({ data: children, message: "Children positions fetched." });
   } catch (error: Error | any) {
     throw new HTTPException(error.status, { message: error.message });
@@ -83,7 +93,8 @@ const GetPositionChildren = async (c: Context): Promise<Response> => {
 
 const GetAllPositions = async (c: Context): Promise<Response> => {
   try {
-    const positions = await positionQueryService.GetAllPositions();
+    const userId = c.req.user.id;
+    const positions = await positionQueryService.GetAllPositions(userId);
     return c.json({ data: positions, message: "All positions fetched" });
   } catch (error: Error | any) {
     throw new HTTPException(error.status, { message: error.message });
@@ -92,7 +103,8 @@ const GetAllPositions = async (c: Context): Promise<Response> => {
 
 const GetPositionChoices = async (c: Context): Promise<Response> => {
   try {
-    const positions: any = await positionQueryService.GetPositionChoices();
+    const userId = c.req.user.id;
+    const positions = await positionQueryService.GetPositionChoices(userId);
     if (positions.length == 0) {
       return c.json({ data: null, message: "No positions found" });
     }
@@ -104,9 +116,14 @@ const GetPositionChoices = async (c: Context): Promise<Response> => {
 
 const GetPositionsList = async (c: Context): Promise<Response> => {
   try {
+    const userId = c.req.user.id;
     const page = c.req.query("page") || "1";
     const limit = c.req.query("limit") || "4";
-    const positions = await positionQueryService.GetPositionsList(page, limit);
+    const positions = await positionQueryService.GetPositionsList(
+      userId,
+      page,
+      limit
+    );
     return c.json({
       data: positions,
       message: "Positions list fetched",

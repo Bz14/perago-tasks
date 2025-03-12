@@ -21,7 +21,7 @@ const LoginAdmin = async (
     }
 
     const token = await sign(
-      { id: admin.id, exp: Math.floor(Date.now() / 1000) + 60 * 100 },
+      { id: admin.id, exp: Math.floor(Date.now() / 1000) + 60 * 1000 },
       config.JWTSecret
     );
     return { accessToken: token };

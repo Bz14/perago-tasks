@@ -30,7 +30,7 @@ const CreatePosition = () => {
   const router = useRouter();
   useEffect(() => {
     if (!checkAdmin()) {
-      router.push("/admin/login");
+      router.push("/admin/signup");
     }
   }, []);
   const form = useForm({
@@ -62,6 +62,7 @@ const CreatePosition = () => {
       });
     },
     onError: (error: Error) => {
+      console.log("Here is an error", error);
       notifications.show({
         title: "Failure",
         message: error ? error.message : "An error occurred",

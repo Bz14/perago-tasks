@@ -8,6 +8,11 @@ const Navbar = () => {
   const [opened, { toggle, close }] = useDisclosure(false);
   const admin = checkAdmin();
 
+  const handleLogOut = () => {
+    localStorage.removeItem("accessToken");
+    window.location.reload();
+  };
+
   return (
     <header className="bg-white text-customBlue px-6 py-4 shadow-md fixed w-full top-0 z-50 ">
       <div className="max-w-6xl mx-auto flex justify-between items-center">
@@ -44,10 +49,20 @@ const Navbar = () => {
           ) : (
             <Button
               component={Link}
-              href="/admin/login"
+              href="/admin/signup"
               className="bg-customBlue text-white hover:bg-gray-400 px-4 rounded-lg"
             >
               Get started
+            </Button>
+          )}
+          {admin && (
+            <Button
+              component={Link}
+              onClick={handleLogOut}
+              href="/"
+              className="bg-customBlue text-white hover:bg-gray-400 px-4 rounded-lg"
+            >
+              Logout
             </Button>
           )}
         </nav>

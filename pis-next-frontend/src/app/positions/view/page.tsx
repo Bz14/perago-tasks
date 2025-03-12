@@ -13,7 +13,7 @@ const ViewPositionHierarchy = () => {
 
   useEffect(() => {
     if (!checkAdmin()) {
-      router.push("/admin/login");
+      router.push("/admin/signup");
     }
   }, []);
 

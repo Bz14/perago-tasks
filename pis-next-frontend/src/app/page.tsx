@@ -36,7 +36,7 @@ export default function Home() {
               </Button>
             </Link>
           ) : (
-            <Link href="/admin/login" passHref>
+            <Link href="/admin/signup" passHref>
               <Button
                 rightSection={<IconArrowRight size={18} />}
                 className="bg-white text-customBlue hover:bg-gray-400

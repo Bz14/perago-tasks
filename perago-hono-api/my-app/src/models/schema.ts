@@ -6,6 +6,7 @@ export const positions = pgTable("positions", {
   description: text().notNull(),
   createdAt: timestamp().notNull().defaultNow(),
   parentId: uuid("parent_id").references((): any => positions.id),
+  createdBy: uuid("created_by").references((): any => admin.id),
 });
 
 export const admin = pgTable("admin", {

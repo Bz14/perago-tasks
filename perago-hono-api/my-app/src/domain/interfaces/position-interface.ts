@@ -1,21 +1,27 @@
 import type { Context } from "hono";
 
 interface PositionRepositoryInterface {
-  GetPositionById: (id: string | null) => Promise<Position>;
+  GetPositionById: (id: string | null, userId: string) => Promise<Position>;
   CreatePosition: (data: {
     name: string;
     description: string;
     parentId: string | null;
+    createdBy: string;
   }) => Promise<Position>;
-  CheckNullParentPosition: () => Promise<{ id: string }>;
-  GetChildrenPosition: (id: string) => Promise<{ id: string; name: string }[]>;
-  GetAllPositions: () => Promise<Position[]>;
+  CheckNullParentPosition: (userId: string) => Promise<{ id: string }>;
+  GetChildrenPosition: (
+    id: string,
+    userId: string
+  ) => Promise<{ id: string; name: string }[]>;
+  GetAllPositions: (userId: string) => Promise<Position[]>;
   GetPositionsList: (
+    userId: string,
     page: number,
     limit: number
   ) => Promise<{ id: string; name: string }[]>;
 
   UpdatePosition: (
+    userId: string,
     id: string,
     name: string,
     description: string,
@@ -26,37 +32,51 @@ interface PositionRepositoryInterface {
     description: string;
     parentId: string | null;
   }>;
-  DeletePositionById: (id: string) => Promise<{ rowCount: number | null }>;
+  DeletePositionById: (
+    id: string,
+    userId: string
+  ) => Promise<{ rowCount: number | null }>;
   GetPositionsByParentId: (parentId: string) => {};
 }
 
 interface PositionCommandServiceInterface {
   CreatePosition: (
+    userId: string,
     name: string,
     description: string,
     parentId: string
   ) => Promise<Position>;
   UpdatePosition: (
+    userId: string,
     id: string,
     name: string,
     description: string,
     parentId: string | null
   ) => Promise<Position>;
-  DeletePosition: (id: string) => Promise<Position>;
+  DeletePosition: (id: string, userId: string) => Promise<Position>;
 }
 
 interface PositionQueryServiceInterface {
-  GetPositionById: (id: string) => Promise<{
+  GetPositionById: (
+    id: string,
+    userId: string
+  ) => Promise<{
     id: string;
     name: string;
     description: string;
     parentId: string | null;
     children: { id: string; name: string }[];
   }>;
-  GetChildrenPositions: (id: string) => Promise<{ id: string; name: string }[]>;
-  GetAllPositions: () => Promise<TreeNode[]>;
-  GetPositionChoices: () => {};
+  GetChildrenPositions: (
+    id: string,
+    userId: string
+  ) => Promise<{ id: string; name: string }[]>;
+  GetAllPositions: (userId: string) => Promise<TreeNode[]>;
+  GetPositionChoices: (
+    userId: string
+  ) => Promise<{ value: string; label: string }[]>;
   GetPositionsList: (
+    userId: string,
     page: string,
     limit: string
   ) => Promise<{ id: string; name: string }[]>;

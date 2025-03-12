@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
 import positionApi from "@/app/api/api";
 import { LoginFormData } from "@/app/interfaces/interface";
+import Link from "next/link";
 
 const schema = z
   .object({
@@ -49,7 +50,7 @@ const SignupPage = () => {
     onSuccess: () => {
       notifications.show({
         title: "Success",
-        message: "Signup successful",
+        message: "Signup successful. Redirecting.....",
         color: "green",
         autoClose: 1000,
         withCloseButton: true,
@@ -140,6 +141,16 @@ const SignupPage = () => {
               "Signup"
             )}
           </Button>
+
+          <p className=" text-gray-500 text-end">
+            Already have an account?{" "}
+            <Link
+              href="/admin/login"
+              className="text-customBlue font-bold hover:underline"
+            >
+              Login
+            </Link>
+          </p>
         </form>
       </div>
     </div>

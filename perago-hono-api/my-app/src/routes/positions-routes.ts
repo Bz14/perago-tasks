@@ -6,7 +6,7 @@ import schema from "../utils/validatorSchema.js";
 import AuthMiddleware from "../middlewares/authMiddleware.js";
 
 const positionsRoute = new Hono({ strict: false })
-  // .use(AuthMiddleware)
+  .use("*", AuthMiddleware)
   .get("/positions/list", positionsController.GetPositionsList)
   .get("/positions", positionsController.GetAllPositions)
   .get("/position/choices", positionsController.GetPositionChoices)

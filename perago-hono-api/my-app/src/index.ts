@@ -10,8 +10,8 @@ const app = new Hono();
 
 app.use(cors({ origin: "*" }));
 
+app.route("/api/v1/auth", adminRoute);
 app.route("/api/v1", positionsRoute);
-app.route("/api/v1", adminRoute);
 
 app.onError((error, c) => {
   if (error instanceof HTTPException) {

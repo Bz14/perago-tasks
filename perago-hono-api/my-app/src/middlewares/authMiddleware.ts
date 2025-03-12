@@ -19,13 +19,15 @@ const AuthMiddleware = async (c: Context, next: any) => {
   if (bearer !== "Bearer") {
     throw new HTTPException(401, { message: "Unauthorized" });
   }
-  const decoded = await verify(token, config.JWTSecret);
-  if (!decoded) {
-    throw new HTTPException(401, { message: "Unauthorized" });
+  try {
+    const decoded = await verify(token, config.JWTSecret);
+    c.req.user = decoded;
+  } catch (err: Error | any) {
+    console.log("Err", err, token);
+    throw new HTTPException(401, {
+      message: "Invalid or expired token. Please login again.",
+    });
   }
-  console.log(decode);
-  c.req.user = decoded;
-
   await next();
 };
 

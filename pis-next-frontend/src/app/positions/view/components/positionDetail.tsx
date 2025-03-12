@@ -77,6 +77,7 @@ const PositionDetail: React.FC<PositionDetailProps> = ({
         { queryKey: ["position", variables?.id] },
         data
       );
+      queryClient.invalidateQueries({ queryKey: ["positions"] });
       notifications.show({
         title: "Success",
         message: "Position updated successfully!",

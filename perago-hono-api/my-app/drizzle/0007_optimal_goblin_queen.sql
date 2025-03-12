@@ -1,0 +1,2 @@
+ALTER TABLE "positions" ADD COLUMN "created_by" uuid;--> statement-breakpoint
+ALTER TABLE "positions" ADD CONSTRAINT "positions_created_by_admin_id_fk" FOREIGN KEY ("created_by") REFERENCES "public"."admin"("id") ON DELETE no action ON UPDATE no action;

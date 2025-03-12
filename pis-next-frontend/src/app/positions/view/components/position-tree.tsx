@@ -43,7 +43,7 @@ const PositionTree: React.FC<PositionTreeProps> = ({
       >
         Organization Chart
       </Text>
-      <Container className="mt-2">
+      <Container className="mt-2 overflow-x-scroll">
         {isLoading && (
           <Container className="flex flex-row justify-center items-center mt-10">
             <Loader />

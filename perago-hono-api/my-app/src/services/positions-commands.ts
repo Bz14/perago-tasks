@@ -8,6 +8,7 @@ import positionRepository from "../repositories/positions-repositories.js";
 import checkDescendant from "../utils/checkDescendant.js";
 
 const CreatePosition = async (
+  userId: string,
   name: string,
   description: string,
   parentId: string | null
@@ -21,7 +22,9 @@ const CreatePosition = async (
     }
 
     if (!parentId) {
-      const nullParent = await positionRepository.CheckNullParentPosition();
+      const nullParent = await positionRepository.CheckNullParentPosition(
+        userId
+      );
 
       if (nullParent) {
         throw new HTTPException(400, {
@@ -31,7 +34,7 @@ const CreatePosition = async (
     }
 
     if (parentId) {
-      const parent = await positionRepository.GetPositionById(parentId);
+      const parent = await positionRepository.GetPositionById(parentId, userId);
       if (!parent) {
         throw new HTTPException(400, {
           message: "Parent position not found",
@@ -43,6 +46,7 @@ const CreatePosition = async (
       name,
       description,
       parentId: parentId === "" ? null : parentId,
+      createdBy: userId,
     });
 
     return newPosition;
@@ -52,13 +56,14 @@ const CreatePosition = async (
 };
 
 const UpdatePosition = async (
+  userId: string,
   id: string,
   name: string,
   description: string,
   parentId: string | null
 ): Promise<Position> => {
   try {
-    const pos = await positionRepository.GetPositionById(id);
+    const pos = await positionRepository.GetPositionById(id, userId);
     if (!pos) {
       throw new HTTPException(404, { message: "Position not found" });
     }
@@ -75,7 +80,7 @@ const UpdatePosition = async (
       parentId = pos.parentId;
     }
 
-    const positions = await positionRepository.GetAllPositions();
+    const positions = await positionRepository.GetAllPositions(userId);
     const childPositions = checkDescendant(positions, id);
     const found = childPositions.find((child) => child === parentId);
     if (found) {
@@ -84,7 +89,14 @@ const UpdatePosition = async (
       });
     }
 
+    if (id == parentId) {
+      throw new HTTPException(400, {
+        message: "Can not set position as parent of itself",
+      });
+    }
+
     const position = await positionRepository.UpdatePosition(
+      userId,
       id,
       name,
       description,
@@ -96,19 +108,22 @@ const UpdatePosition = async (
   }
 };
 
-const DeletePosition = async (id: string): Promise<Position> => {
+const DeletePosition = async (
+  id: string,
+  userId: string
+): Promise<Position> => {
   try {
-    const pos = await positionRepository.GetPositionById(id);
+    const pos = await positionRepository.GetPositionById(id, userId);
     if (!pos) {
       throw new HTTPException(404, { message: "Position not found" });
     }
-    const children = await positionRepository.GetChildrenPosition(id);
+    const children = await positionRepository.GetChildrenPosition(id, userId);
     if (children.length > 0) {
       throw new HTTPException(400, {
         message: "Position has children. Delete children first",
       });
     }
-    const _ = await positionRepository.DeletePositionById(id);
+    const _ = await positionRepository.DeletePositionById(id, userId);
     return pos;
   } catch (error: Error | any) {
     throw new HTTPException(error.status, { message: error.message });

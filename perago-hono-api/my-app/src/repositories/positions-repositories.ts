@@ -1,4 +1,4 @@
-import { eq, isNull, count } from "drizzle-orm";
+import { eq, isNull, and } from "drizzle-orm";
 import { db } from "../config/db.js";
 import { positions } from "../models/schema.js";
 import type {
@@ -6,7 +6,10 @@ import type {
   PositionRepositoryInterface,
 } from "../domain/interfaces/position-interface.js";
 
-const GetPositionById = async (id: string | null): Promise<Position> => {
+const GetPositionById = async (
+  id: string | null,
+  userId: string
+): Promise<Position> => {
   const [position] = await db
     .select({
       id: positions.id,
@@ -15,7 +18,11 @@ const GetPositionById = async (id: string | null): Promise<Position> => {
       parentId: positions.parentId,
     })
     .from(positions)
-    .where(id === null ? isNull(positions.id) : eq(positions.id, id));
+    .where(
+      id === null
+        ? and(isNull(positions.id), eq(positions.createdBy, userId))
+        : and(eq(positions.id, id), eq(positions.createdBy, userId))
+    );
   return position;
 };
 
@@ -23,6 +30,7 @@ const CreatePosition = async (data: {
   name: string;
   description: string;
   parentId: string | null;
+  createdBy: string;
 }): Promise<Position> => {
   const [position] = await db.insert(positions).values(data).returning({
     id: positions.id,
@@ -33,24 +41,27 @@ const CreatePosition = async (data: {
   return position;
 };
 
-const CheckNullParentPosition = async (): Promise<{ id: string }> => {
+const CheckNullParentPosition = async (
+  userId: string
+): Promise<{ id: string }> => {
   const [position] = await db
     .select({ id: positions.id })
     .from(positions)
-    .where(isNull(positions.parentId));
+    .where(and(isNull(positions.parentId), eq(positions.createdBy, userId)));
   return position;
 };
 
 const GetChildrenPosition = async (
-  id: string
+  id: string,
+  userId: string
 ): Promise<{ id: string; name: string }[]> => {
   return await db
     .select({ id: positions.id, name: positions.name })
     .from(positions)
-    .where(eq(positions.parentId, id));
+    .where(and(eq(positions.parentId, id), eq(positions.createdBy, userId)));
 };
 
-const GetAllPositions = async (): Promise<Position[]> => {
+const GetAllPositions = async (userId: string): Promise<Position[]> => {
   const allPositions = await db
     .select({
       id: positions.id,
@@ -58,11 +69,13 @@ const GetAllPositions = async (): Promise<Position[]> => {
       description: positions.description,
       parentId: positions.parentId,
     })
-    .from(positions);
+    .from(positions)
+    .where(eq(positions.createdBy, userId));
   return allPositions;
 };
 
 const UpdatePosition = async (
+  userId: string,
   id: string,
   name: string,
   description: string,
@@ -76,7 +89,7 @@ const UpdatePosition = async (
   const [position] = await db
     .update(positions)
     .set({ name, description, parentId })
-    .where(eq(positions.id, id))
+    .where(and(eq(positions.id, id), eq(positions.createdBy, userId)))
     .returning({
       id: positions.id,
       name: positions.name,
@@ -87,9 +100,12 @@ const UpdatePosition = async (
 };
 
 const DeletePositionById = async (
-  id: string
+  id: string,
+  userId: string
 ): Promise<{ rowCount: number | null }> => {
-  const deleteData = await db.delete(positions).where(eq(positions.id, id));
+  const deleteData = await db
+    .delete(positions)
+    .where(and(eq(positions.id, id), eq(positions.createdBy, userId)));
   return { rowCount: deleteData.rowCount };
 };
 
@@ -101,12 +117,14 @@ const GetPositionsByParentId = async (parentId: string) => {
 };
 
 const GetPositionsList = async (
+  userId: string,
   page: number,
   limit: number
 ): Promise<{ id: string; name: string }[]> => {
   return await db
     .select({ id: positions.id, name: positions.name })
     .from(positions)
+    .where(eq(positions.createdBy, userId))
     .limit(limit)
     .offset((page - 1) * limit);
 };
