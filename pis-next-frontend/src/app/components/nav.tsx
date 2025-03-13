@@ -38,15 +38,7 @@ const Navbar = () => {
           <Link href="/about" className="hover:text-gray-400">
             About
           </Link>
-          {admin ? (
-            <Button
-              component={Link}
-              href="/positions/create"
-              className="bg-customBlue text-white hover:bg-gray-400 p-2 rounded-lg"
-            >
-              Create Position
-            </Button>
-          ) : (
+          {!admin && (
             <Button
               component={Link}
               href="/admin/signup"

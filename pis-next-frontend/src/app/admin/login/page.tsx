@@ -47,7 +47,7 @@ const LoginPage = () => {
         withCloseButton: true,
         position: "top-center",
       });
-      router.push("/positions/create");
+      router.push("/positions/view");
     },
     onError: (error: Error) => {
       notifications.show({

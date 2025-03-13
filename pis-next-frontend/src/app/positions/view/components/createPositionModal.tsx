@@ -5,11 +5,17 @@ import { useForm } from "react-hook-form";
 import { notifications } from "@mantine/notifications";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import Image from "next/image";
-import img from "../../../../public/images/img1.jpg";
-import { TextInput, Select, Button, Loader, Textarea } from "@mantine/core";
+import {
+  TextInput,
+  Select,
+  Button,
+  Loader,
+  Textarea,
+  Container,
+} from "@mantine/core";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import positionApi from "@/app/api/api";
+import { Modal } from "@mantine/core";
 
 import checkAdmin from "@/app/utils/checkAdmin";
 import { FormData } from "@/app/interfaces/interface";
@@ -25,7 +31,12 @@ const schema = z.object({
   parentId: z.string(),
 });
 
-const CreatePosition = () => {
+interface CreatePositionModalProps {
+  opened: boolean;
+  close: () => void;
+}
+
+const CreatePositionModal = ({ opened, close }: CreatePositionModalProps) => {
   const queryClient = useQueryClient();
   const router = useRouter();
   useEffect(() => {
@@ -94,21 +105,21 @@ const CreatePosition = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-xl flex flex-col md:flex-row gap-8 mt-28">
-      <div className="h-96 flex justify-center md:w-1/2 bg-customBlue rounded-lg shadow-lg mt-2">
-        <Image
-          src={img}
-          alt="Hierarchy Structure"
-          className="w-full h-auto rounded-lg"
-          width={500}
-          height={300}
-        />
-      </div>
-      <div className="md:w-1/2 flex flex-col justify-start gap-6">
-        <h2 className="text-xl font-bold text-center text-customBlue">
-          Create New Position
-        </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <Modal
+      opened={opened}
+      onClose={close}
+      title="Create New Position"
+      classNames={{
+        body: "flex flex-col justify-start gap-6 p-2 shadow-lg rounded-lg bg-gray-50",
+        title: "text-customBlue text-xl font-bold",
+        close: "text-customBlue",
+      }}
+    >
+      <Container className="w-full p-4">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6 shadow-lg p-6 rounded-lg bg-white"
+        >
           <div>
             <TextInput
               label="Position Title"
@@ -122,7 +133,6 @@ const CreatePosition = () => {
               }}
             />
           </div>
-
           <div>
             <Textarea
               label="Job Description"
@@ -167,9 +177,9 @@ const CreatePosition = () => {
             )}
           </Button>
         </form>
-      </div>
-    </div>
+      </Container>
+    </Modal>
   );
 };
 
-export default CreatePosition;
+export default CreatePositionModal;

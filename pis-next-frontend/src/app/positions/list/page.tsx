@@ -65,7 +65,7 @@ const ListPositions = () => {
           <IconArrowLeft />
         </Button>
         <Button
-          className="bg-customBlue text-white"
+          className={`bg-customBlue text-white`}
           onClick={() => {
             if (!isPlaceholderData && hasNextPage) {
               setPage((old) => old + 1);

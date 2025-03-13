@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 const schema = z.object({
-  name: z.string().nonempty({ message: "Position name is required" }).min(3, {
-    message: "Position name must be at least 3 characters",
+  name: z.string().nonempty({ message: "Position name is required" }).min(2, {
+    message: "Position name must be at least 2 characters",
   }),
   description: z
     .string()

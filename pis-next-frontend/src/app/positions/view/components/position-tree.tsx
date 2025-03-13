@@ -6,6 +6,9 @@ import {
 
 import { Loader, Tree, Container, Text } from "@mantine/core";
 import { TreeNode, OrganizationNode } from "@/app/interfaces/interface";
+import { useDisclosure } from "@mantine/hooks";
+import { IconPlus } from "@tabler/icons-react";
+import CreatePositionModal from "../components/createPositionModal";
 
 interface PositionTreeProps {
   positions: OrganizationNode[];
@@ -18,6 +21,8 @@ const PositionTree: React.FC<PositionTreeProps> = ({
   isLoading,
   onSelectNode,
 }) => {
+  const [opened, { open, close }] = useDisclosure(false);
+
   const transformNodes = (nodes: OrganizationNode[]): TreeNode[] => {
     return (
       nodes &&
@@ -37,12 +42,21 @@ const PositionTree: React.FC<PositionTreeProps> = ({
       size="responsive"
       className="w-2/3 bg-white p-6 rounded-lg shadow-lg mt-28"
     >
+      <div
+        className="relative flex justify-end items-center text-white bg-customBlue w-fit ml-auto rounded-full p-2 cursor-pointer"
+        onClick={open}
+      >
+        <IconPlus size={20} />
+      </div>
+
+      <CreatePositionModal opened={opened} close={close} />
       <Text
         size="xl"
         className="text-2xl font-bold text-center text-customBlue"
       >
         Organization Chart
       </Text>
+
       <Container className="mt-2 overflow-x-scroll">
         {isLoading && (
           <Container className="flex flex-row justify-center items-center mt-10">
