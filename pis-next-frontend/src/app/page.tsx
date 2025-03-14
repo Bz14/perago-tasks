@@ -1,8 +1,8 @@
 "use client";
-import Link from "next/link";
 import { Button } from "@mantine/core";
-import { IconArrowRight } from "@tabler/icons-react";
 import checkAdmin from "./utils/checkAdmin";
+import { IconArrowRight } from "@tabler/icons-react";
+import Link from "next/link";
 
 export default function Home() {
   const admin = checkAdmin();

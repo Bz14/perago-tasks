@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, FieldErrors } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
@@ -65,10 +65,6 @@ const LoginPage = () => {
     },
   });
 
-  const onError = (errors: FieldErrors) => {
-    console.log(errors);
-  };
-
   const onSubmit = async (data: LoginFormData) => {
     loginMutation.mutate(data);
   };
@@ -80,10 +76,7 @@ const LoginPage = () => {
           Admin Login
         </h2>
 
-        <form
-          onSubmit={handleSubmit(onSubmit, onError)}
-          className="space-y-4 mt-6 p-4"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-6 p-4">
           <div>
             <TextInput
               label="Email"

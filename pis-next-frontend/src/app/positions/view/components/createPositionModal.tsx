@@ -73,7 +73,6 @@ const CreatePositionModal = ({ opened, close }: CreatePositionModalProps) => {
       });
     },
     onError: (error: Error) => {
-      console.log("Here is an error", error);
       notifications.show({
         title: "Failure",
         message: error ? error.message : "An error occurred",
