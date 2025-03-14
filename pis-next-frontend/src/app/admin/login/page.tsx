@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { notifications } from "@mantine/notifications";
 import positionApi from "@/app/api/api";
 import { LoginFormData } from "@/app/interfaces/interface";
+import Link from "next/link";
 
 const schema = z.object({
   email: z
@@ -124,6 +125,15 @@ const LoginPage = () => {
               "Login"
             )}
           </Button>
+          <p className=" text-gray-500 text-end">
+            Don&apos; have an account?{" "}
+            <Link
+              href="/admin/signup"
+              className="text-customBlue font-bold hover:underline"
+            >
+              Signup
+            </Link>
+          </p>
         </form>
       </div>
     </div>

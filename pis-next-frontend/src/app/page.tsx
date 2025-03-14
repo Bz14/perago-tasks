@@ -26,7 +26,7 @@ export default function Home() {
 
         <div className="mt-8 flex flex-wrap justify-center gap-6">
           {admin ? (
-            <Link href="/positions/create" passHref>
+            <Link href="/positions/view" passHref>
               <Button
                 rightSection={<IconArrowRight size={18} />}
                 className="bg-white text-customBlue hover:bg-gray-400

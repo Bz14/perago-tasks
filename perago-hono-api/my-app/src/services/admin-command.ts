@@ -1,12 +1,8 @@
-import type {
-  AdminRepositoryInterface,
-  AdminCommandServiceInterface,
-} from "../domain/interfaces/admin-interface.js";
+import type { AdminCommandServiceInterface } from "../domain/interfaces/admin-interface.js";
 
-import { HTTPException } from "hono/http-exception";
 import adminRepository from "../repositories/admin-repository.js";
-
 import bcrypt from "bcrypt";
+import { HTTPException } from "hono/http-exception";
 
 const CreateAdmin = async (
   email: string,

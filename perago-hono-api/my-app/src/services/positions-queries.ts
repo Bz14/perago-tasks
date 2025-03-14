@@ -1,5 +1,5 @@
-import { HTTPException } from "hono/http-exception";
 import buildTree from "../utils/buildTree.js";
+import { HTTPException } from "hono/http-exception";
 import positionRepository from "../repositories/positions-repositories.js";
 import type {
   TreeNode,

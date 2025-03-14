@@ -1,3 +1,4 @@
+import checkDescendant from "../utils/checkDescendant.js";
 import { HTTPException } from "hono/http-exception";
 
 import type {
@@ -5,7 +6,6 @@ import type {
   PositionCommandServiceInterface,
 } from "../domain/interfaces/position-interface.js";
 import positionRepository from "../repositories/positions-repositories.js";
-import checkDescendant from "../utils/checkDescendant.js";
 
 const CreatePosition = async (
   userId: string,
@@ -14,13 +14,6 @@ const CreatePosition = async (
   parentId: string | null
 ): Promise<Position> => {
   try {
-    if (!name) {
-      throw new HTTPException(400, { message: "Name is required" });
-    }
-    if (!description) {
-      throw new HTTPException(400, { message: "Description is required" });
-    }
-
     if (!parentId) {
       const nullParent = await positionRepository.CheckNullParentPosition(
         userId

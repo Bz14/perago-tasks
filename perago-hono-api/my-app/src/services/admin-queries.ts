@@ -1,10 +1,9 @@
+import type { AdminQueryServiceInterface } from "../domain/interfaces/admin-interface.js";
+import adminRepository from "../repositories/admin-repository.js";
 import bcrypt from "bcrypt";
+import config from "../config/config.js";
 import { HTTPException } from "hono/http-exception";
 import { sign } from "hono/jwt";
-
-import adminRepository from "../repositories/admin-repository.js";
-import type { AdminQueryServiceInterface } from "../domain/interfaces/admin-interface.js";
-import config from "../config/config.js";
 
 const LoginAdmin = async (
   email: string,

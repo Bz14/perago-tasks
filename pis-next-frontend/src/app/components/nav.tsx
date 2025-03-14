@@ -2,11 +2,17 @@
 import { Burger, Drawer, Button } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import Link from "next/link";
-import checkAdmin from "../utils/checkAdmin";
+import { useState, useEffect } from "react";
 
 const Navbar = () => {
   const [opened, { toggle, close }] = useDisclosure(false);
-  const admin = checkAdmin();
+  const [admin, setAdmin] = useState(false);
+  // const admin = localStorage.getItem("accessToken");
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    setAdmin(!!token);
+  }, []);
 
   const handleLogOut = () => {
     localStorage.removeItem("accessToken");

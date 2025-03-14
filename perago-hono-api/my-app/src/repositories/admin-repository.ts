@@ -1,7 +1,7 @@
-import { eq } from "drizzle-orm";
+import type { AdminRepositoryInterface } from "../domain/interfaces/admin-interface.js";
 import { db } from "../config/db.js";
 import { admin } from "../models/schema.js";
-import type { AdminRepositoryInterface } from "../domain/interfaces/admin-interface.js";
+import { eq } from "drizzle-orm";
 
 const createAdmin = async (
   email: string,

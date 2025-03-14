@@ -2,6 +2,7 @@ import type {
   Position,
   TreeNode,
 } from "../domain/interfaces/position-interface.js";
+
 const buildTree = (
   positions: Position[],
   parentId: string | null = null

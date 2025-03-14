@@ -1,5 +1,5 @@
-import { eq, isNull, and } from "drizzle-orm";
 import { db } from "../config/db.js";
+import { eq, isNull, and } from "drizzle-orm";
 import { positions } from "../models/schema.js";
 import type {
   Position,

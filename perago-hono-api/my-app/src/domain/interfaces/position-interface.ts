@@ -38,7 +38,6 @@ interface PositionRepositoryInterface {
   ) => Promise<{ rowCount: number | null }>;
   GetPositionsByParentId: (parentId: string) => {};
 }
-
 interface PositionCommandServiceInterface {
   CreatePosition: (
     userId: string,
@@ -55,7 +54,6 @@ interface PositionCommandServiceInterface {
   ) => Promise<Position>;
   DeletePosition: (id: string, userId: string) => Promise<Position>;
 }
-
 interface PositionQueryServiceInterface {
   GetPositionById: (
     id: string,
@@ -82,17 +80,6 @@ interface PositionQueryServiceInterface {
   ) => Promise<{ id: string; name: string }[]>;
 }
 
-interface PositionControllerInterface {
-  CreatePosition: (c: Context) => Promise<Response>;
-  UpdatePosition: (c: Context) => Promise<Response>;
-  DeletePosition: (c: Context) => Promise<Response>;
-  GetPositionById: (c: Context) => Promise<Response>;
-  GetPositionChildren: (c: Context) => Promise<Response>;
-  GetAllPositions: (c: Context) => Promise<Response>;
-  GetPositionChoices: (c: Context) => Promise<Response>;
-  GetPositionsList: (c: Context) => Promise<Response>;
-}
-
 export type Position = {
   id: string;
   name: string;
@@ -111,5 +98,4 @@ export type {
   PositionRepositoryInterface,
   PositionCommandServiceInterface,
   PositionQueryServiceInterface,
-  PositionControllerInterface,
 };

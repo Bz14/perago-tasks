@@ -1,7 +1,7 @@
-import { HTTPException } from "hono/http-exception";
-import type { Context } from "hono";
-import { verify, decode } from "hono/jwt";
 import config from "../config/config.js";
+import type { Context } from "hono";
+import { HTTPException } from "hono/http-exception";
+import { verify } from "hono/jwt";
 
 declare module "hono" {
   interface HonoRequest {
@@ -23,7 +23,6 @@ const AuthMiddleware = async (c: Context, next: any) => {
     const decoded = await verify(token, config.JWTSecret);
     c.req.user = decoded;
   } catch (err: Error | any) {
-    console.log("Err", err, token);
     throw new HTTPException(401, {
       message: "Invalid or expired token. Please login again.",
     });

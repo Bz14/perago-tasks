@@ -1,10 +1,10 @@
-import { Hono } from "hono";
-import { serve } from "@hono/node-server";
-import positionsRoute from "./routes/positions-routes.js";
 import adminRoute from "./routes/admin-route.js";
 import config from "./config/config.js";
 import { cors } from "hono/cors";
+import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import positionsRoute from "./routes/positions-routes.js";
+import { serve } from "@hono/node-server";
 
 const app = new Hono();
 

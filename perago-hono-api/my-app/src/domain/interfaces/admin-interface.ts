@@ -8,14 +8,12 @@ interface AdminRepositoryInterface {
     email: string
   ) => Promise<{ id: string; email: string; password: string }>;
 }
-
 interface AdminCommandServiceInterface {
   CreateAdmin: (
     email: string,
     password: string
   ) => Promise<{ email: string; id: string }>;
 }
-
 interface AdminQueryServiceInterface {
   LoginAdmin: (
     email: string,
@@ -23,14 +21,8 @@ interface AdminQueryServiceInterface {
   ) => Promise<{ accessToken: string }>;
 }
 
-interface AdminControllerInterface {
-  CreateAdmin: (c: Context) => Promise<Response>;
-  LoginAdmin: (c: Context) => Promise<Response>;
-}
-
 export type {
   AdminRepositoryInterface,
   AdminCommandServiceInterface,
   AdminQueryServiceInterface,
-  AdminControllerInterface,
 };
